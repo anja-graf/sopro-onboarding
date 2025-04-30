@@ -1,0 +1,97 @@
+@page
+@{
+ViewData["Title"] = "Select Blueprint";
+}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+    <style>
+        :root {
+            --white: #ffffff;
+            --grey1: #dbdbdb;
+            --grey2: #afafaf;
+            --grey3: #626262;
+            --licorice: #141210;
+            --amaranth: #e61d47;
+            --font-family-sans: 'Open Sans', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--white);
+            display: flex;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: left;
+            width: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            color: var(--amaranth);
+            margin-bottom: 20px;
+            font-size: 50px;
+            font-weight: bold;
+            font-family: 'League-Spartan', sans-serif;
+        }
+
+        .card {
+            display: inline-block;
+            width: 250px;
+            padding: 30px;
+            margin: 15px;
+            border: 1px solid var(--grey1);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+            vertical-align: top;
+            text-align: left;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card:first-child {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .card img {
+            width: 50px;
+            height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: var(--grey3);
+        }
+
+        .card:hover {
+            background-color: var(--grey1);
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Neuen Vorgang auswählen</h1>
+    <a href="~/ProcessBlueprintViews/Create" class="card">
+        <div>
+            <h2>Blueprint hinzufügen</h2>
+            <p style="font-size: 48px; margin: 0;">+</p>
+        </div>
+    </a>
+</div>
+</body>
+</html>
+

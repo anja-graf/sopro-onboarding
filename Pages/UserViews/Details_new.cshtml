@@ -1,0 +1,56 @@
+﻿@page
+@model Replay.DetailsModel
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil von @Model.User.Name</title>
+    <link rel="stylesheet" href="/css/styles2.css">
+</head>
+<body>
+    <div class="container details-view">
+        <h1>Profil von @Model.User.Name</h1>
+        <div class="user-info">
+            <div class="form-group">
+                <label>Name</label>
+                <p>@Model.User.Name</p>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <p>@Model.User.Email</p>
+            </div>
+            <div class="form-group">
+                <label>Gesperrt</label>
+                <p>@(Model.User.IsBlocked ? "Ja" : "Nein")</p>
+            </div>
+            <div class="form-group">
+                <label>Rollen</label>
+                <div class="tags" id="roles">
+                    @foreach (var role in Model.User.Roles)
+                    {
+                        <span class="tag">@role.RoleName</span>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Abteilungen</label>
+                <div class="tags" id="departments">
+                    @foreach (var department in Model.User.Departments)
+                    {
+                        <span class="tag">@department.DepartmentName</span>
+                    }
+                </div>
+            </div>
+            <button type="button" class="details-save-btn" onclick="goBack()">Zurück</button>
+        </div>
+    </div>
+
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+    </script>
+</body>
+</html>

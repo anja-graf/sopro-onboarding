@@ -1,0 +1,61 @@
+image: mcr.microsoft.com/dotnet/sdk:6.0
+
+stages:
+  - build
+  - unit_test
+  - e2e_test
+  - deploy
+
+build-replay:
+  stage: build
+  tags:
+    - sopro
+  script:
+    - dotnet build ./Project/Replay
+
+unit_test-replay:
+  stage: unit_test
+  tags:
+    - sopro
+  script:
+    - dotnet test ./Project/Replay.Unittest
+
+frontend_test-replay:
+  stage: e2e_test
+  tags:
+    - sopro
+  before_script:
+    - apt-get update
+    - apt-get install -y wget gnupg --no-install-recommends
+    - wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+    - sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+    - apt-get update
+    - apt-get install -y google-chrome-stable --no-install-recommends
+    - apt-get install -y xvfb
+  script:
+
+    - dotnet run --project ./Project/Replay -c Release &
+    - sleep 20  # Wartezeit bis die Anwendung gestartet ist
+    - xvfb-run -a dotnet test ./Project/Replay.Frontendtest --no-restore
+
+kaniko-build-replay:
+  tags:
+    - sopro
+  variables:
+    KANIKO_ARGS: "--single-snapshot"
+    KANIKO_BUILD_CONTEXT: $CI_PROJECT_DIR/Project/Replay
+    IMAGE_TAG_NAME: latest
+  stage: deploy
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - export IMAGE_TAG=${CI_REGISTRY_IMAGE}/replay:${IMAGE_TAG_NAME}
+    - echo $IMAGE_TAG
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"auth\":\"$(echo -n ${CI_REGISTRY_USER}:${CI_REGISTRY_PASSWORD} | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+    - DOCKERFILE_PATH=${DOCKERFILE_PATH:-"$KANIKO_BUILD_CONTEXT/Dockerfile"}
+    - /kaniko/executor --context $KANIKO_BUILD_CONTEXT --dockerfile $DOCKERFILE_PATH --destination $IMAGE_TAG $KANIKO_ARGS
+  rules:
+    - exists:
+        - Project/Replay/Dockerfile

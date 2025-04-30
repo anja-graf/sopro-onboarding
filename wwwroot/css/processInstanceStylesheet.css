@@ -1,0 +1,199 @@
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+form {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.task-preview {
+    max-width: 600px;
+    margin: 30px auto;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.task-preview-item {
+    border-bottom: 2px solid var(--gray1);
+    padding: 10px 5px 5px;
+}
+
+.task-preview-item:last-child {
+    border-bottom: none;
+}
+
+/* needed to inject to last visible item, when filter is applied by contract or department*/
+.task-preview-item.last-visible {
+    border-bottom: none;
+}
+
+.task-preview-item h5 {
+    margin: 0;
+}
+
+.task-preview-item card {
+    margin-top: 10px;
+    border: none;
+    background-color: #f8f9fa;
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.task-item-buttons {
+    display: block;
+    float:right;
+}
+
+.task-preview button[type="button"], button[type="submit"] {
+    background-color: var(--white);
+    color: var(--red);
+    cursor: pointer;
+}
+.task-item-buttons i {
+    font-size: 1.25rem;
+}
+.task-item-add-button {
+    font-size: 2rem;
+}
+
+.task-preview button[type="button"]:hover {
+    
+}
+
+.start-button {
+    display: block;
+    margin: 20px auto;
+    background-color: var(--red);
+    color: var(--white);
+    border-color: var(--red);
+    border-radius: 5px;
+    cursor: pointer;
+}
+.start-button:hover {
+    color: var(--licorice);
+}
+
+#process-form input:focus {
+
+    outline: 0;
+    border: none;
+    box-shadow: 0 0 0 .25rem rgba(219, 18, 151, 0.25) !important;
+}
+
+
+/*Index specific styles*/
+.process-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 2fr));
+    gap: 20px;
+    padding: 20px;
+}
+.process-card {
+    height: 100%;
+    transition: box-shadow 0.3s ease;
+    background-color: var(--color-bg);
+    border: 1px solid var(--gray1);
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 60px;
+}
+.process-card:hover {
+    box-shadow: 0 4px 8px var(--color-layer-shadow);
+}
+.user-info {
+    margin-bottom: 1rem;
+}
+.user-label {
+    margin-bottom: 0;
+}
+.user-pill {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 85%;
+    font-weight: 600;
+    line-height: 1.4; 
+    text-align: center;
+    white-space: normal; 
+    vertical-align: baseline;
+    border-radius: 1rem;
+    background-color: var(--gray2);
+    color: var(--color-text);
+    word-wrap: break-word; 
+    max-width: 100%; 
+}
+.task-list {
+    margin-top: 15px;
+    height: 180px;
+    overflow-y: auto;
+}
+.task-item {
+    background-color: var(--color-bg-table);
+    border-radius: 6px;
+    padding: 5px 10px;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    
+}
+.task-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+.task-name {
+    flex: 1;
+    min-width: 0;
+    word-break: break-word;
+}
+.task-status {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: 0.25rem;
+}
+.status-not_started { background-color: var(--gray3); }
+.status-in_progress { background-color: var(--color-bg-warning); }
+.status-completed { background-color: var(--red); }
+.card-title, .card-text, .task-name, .task-status {
+    color: var(--color-text);
+}
+
+.btn-group {
+    position: absolute;
+    bottom: 15px; /* Abstand vom unteren Rand */
+    left: 15px; /* Abstand vom linken Rand */
+    right: 15px; /* Abstand vom rechten Rand */
+    display: flex;
+    justify-content: space-between;
+}
+.btn-group .btn, .process-card .btn {
+    
+    border-color: var(--red);
+    color: var(--red);
+    flex: 1;
+    margin: 0 0 .25rem;
+}
+
+.btn-group .btn:hover, .process-card .btn:hover{
+    background-color: var(--pink);
+    border-color: var(--pink);
+    color: var(--white);
+}

@@ -1,0 +1,51 @@
+.searchbar {
+    margin-left: 1rem;
+    border: 1px solid black;
+}
+
+.searchbar:focus-within
+{
+    border: 2px solid var(--red);
+}
+
+.searchbar:focus-within i {
+    color: var(--red);
+}
+
+.search-field {
+    border: none;
+    outline: none;
+} 
+
+.dropdown button {
+    color: var(--white);
+    background-color: var(--red);
+}
+
+.dropdown .btn:focus {
+    outline: 0;
+    box-shadow: 0 0 0 .25rem rgba(219, 18, 151, 0.25) !important;
+}
+
+.table a {
+    color: var(--licorice);
+}
+
+.table a:hover {
+    color: var(--color-interaction-hover);
+}
+
+.table button {
+    width: 100%;
+    color: var(--white);
+    background-color: var(--red);
+}
+
+.table button:hover {
+    color: var(--licorice) !important;
+    background-color: var(--red) !important;
+}
+.table .btn:focus {
+    outline: 0;
+    box-shadow: 0 0 0 .25rem rgba(219, 18, 151, 0.25) !important;
+}

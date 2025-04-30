@@ -1,0 +1,130 @@
+﻿@page
+@model Replay.IndexModel
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benutzerkonten</title>
+    <link rel="stylesheet" href="\css\styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+</head>
+<body>
+<div class="container">
+    <main class="main-content">
+        <header class="header">
+            <h1>Benutzerkonten</h1>
+            <a asp-page="Create_new" class="adduser">
+                <img src="\img\addbutton.png" alt="Adduser"> Benutzer hinzufügen
+            </a>
+        </header>
+        <div class="search-filter">
+            <form method="get" id="searchFilterForm">
+                <input type="text" asp-for="SearchString" placeholder="Suche Benutzer..." class="search-input" id="searchInput">
+                <input type="hidden" asp-for="FilterOption" id="filterOption">
+                <div class="filter-dropdown-container">
+                    <button type="button" class="filter-btn" id="filterButton">
+                        <img src="\img\filterbutton.png" alt="Filter"><span>Filter</span>
+                    </button>
+                    <div class="filter-dropdown" id="filterDropdown">
+                        <div class="dropdown-item" data-value="">Alle Benutzer</div>
+                        <div class="dropdown-item" data-value="blocked">Gesperrte Benutzer</div>
+                        <div class="dropdown-item" data-value="notblocked">Nicht gesperrte Benutzer</div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <table class="user-table">
+            <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Aktionen</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var user in Model.User)
+            {
+                <tr>
+                    <td><a asp-page="./Details_new" asp-route-id="@user.Email">@user.Name</a></td>
+                    <td><a asp-page="./Details_new" asp-route-id="@user.Email">@user.Email</a></td>
+                    <td class="actions">
+                        <a asp-page="./Edit_new" asp-route-id="@user.Email" class="edit-btn">
+                            <img src="\img\editbutton.png" alt="Edit">
+                        </a>
+                        <a asp-page="./Delete" asp-route-id="@user.Email" class="delete-btn">
+                            <img src="\img\trashcan.png" alt="Delete">
+                        </a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </main>
+</div>
+@section Scripts {
+<script>
+    $(document).ready(function() {
+        const filterButton = document.getElementById('filterButton');
+        const filterDropdown = document.getElementById('filterDropdown');
+        const filterOption = document.getElementById('filterOption');
+        const searchFilterForm = document.getElementById('searchFilterForm');
+
+        filterButton.addEventListener('click', function() {
+            filterDropdown.style.display = filterDropdown.style.display === 'block' ? 'none' : 'block';
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!filterButton.contains(event.target) && !filterDropdown.contains(event.target)) {
+                filterDropdown.style.display = 'none';
+            }
+        });
+
+        const dropdownItems = filterDropdown.getElementsByClassName('dropdown-item');
+        for (const item of dropdownItems) {
+            item.addEventListener('click', function() {
+                filterOption.value = this.dataset.value;
+                updateFilterButtonText(this.textContent);
+                filterDropdown.style.display = 'none';
+                searchFilterForm.submit();
+            });
+        }
+
+        function updateFilterButtonText(text) {
+            const filterIcon = '<img src="\\img\\filterbutton.png" alt="Filter">';
+            filterButton.innerHTML = filterIcon + '<span>' + text + '</span>';
+        }
+
+        // Set initial filter button text based on the current filter
+        const currentFilter = filterOption.value;
+        const currentFilterText = Array.from(dropdownItems).find(item => item.dataset.value === currentFilter)?.textContent || 'Filter';
+        updateFilterButtonText(currentFilterText);
+
+        // Search functionality (unchanged)
+        $('#searchInput').on('input', function() {
+            var searchText = $(this).val().toLowerCase().trim().split(/\s+/);
+
+            $('tbody tr').each(function() {
+                var rowText = $(this).find('td:nth-child(1), td:nth-child(2)')
+                    .map(function() {
+                        return $(this).text().trim().replace(/\s+/g, '');
+                    })
+                    .get().join(' ').toLowerCase().replace(/\s+/g, '');
+
+                var matchAllParts = searchText.every(function(part) {
+                    return rowText.includes(part);
+                });
+
+                if (matchAllParts) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+</script>
+}
+</body>
+</html>

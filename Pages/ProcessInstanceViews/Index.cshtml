@@ -1,0 +1,97 @@
+@page
+@using Replay.Model
+@model Replay.Pages.ProcessInstanceViews.IndexModel
+
+@{
+    Layout = "Shared/_Layout";
+}
+<!DOCTYPE html>
+
+<html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="~/css/processInstanceStylesheet.css" rel="stylesheet"/>
+</head>
+
+<h1>Index</h1>
+
+<p>
+    <a href="~/ProcessBlueprintViews/SelectBlueprint">Create New</a>
+</p>
+
+<input type="text" id="searchInput" placeholder="Nach Vorgang suchen">
+
+<div class="process-list" id="itemList">
+    @foreach (var pInstance in Model.ActiveProcessInstances)
+    {
+        <div class="card process-card">
+            <div class="card-body">
+                <h5 class="card-title">@pInstance.ProcessInstanceName</h5>
+                <div class="user-info">
+                    <p class="user-label">Vorgangsverantwortlicher</p>
+                    <span class="user-pill">@pInstance.ResponsibleUser.Name</span>
+                </div>
+                <div class="user-info">
+                    <p class="user-label">Bezugsperson</p>
+                    <span class="user-pill">@pInstance.ReferenceUser.Name</span>
+                </div>
+                <div class="user-info">
+                    <p class="user-label">Zieldatum</p>
+                    <span class="user-pill">@pInstance.DueDate</span>
+                </div>
+                <div class="task-list">
+                    @foreach (var task in pInstance.AllTasks)
+                    {
+                        <div class="task-item">
+                            <div class="task-content">
+                                <span class="task-name">@task.TaskName</span>
+                                <span class="task-status status-@(task.TaskStatus.ToString().ToLower())">
+                                    @TranslationStatus.getTranslation(task.TaskStatus)
+                                </span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="btn-group">
+                    <form method="get" asp-page="/ProcessInstanceViews/Edit" asp-route-id="@pInstance.Id">
+                        <button type="submit" class="btn btn-sm">Bearbeiten</button>
+                    </form>
+                    <form method="get" asp-page="/ProcessInstanceViews/Details" asp-route-id="@pInstance.Id">
+                        <button type="submit" class="btn btn-sm">Details</button>
+                    </form>
+                    <form method="post" asp-page-handler="Archive" asp-route-id="@pInstance.Id">
+                        <button type="submit" class="btn btn-sm">Archivieren</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+    }
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('searchInput');
+        const itemList = document.getElementById('itemList');
+        const items = Array.from(itemList.getElementsByClassName('card process-card'));
+
+        searchInput.addEventListener('input', function () {
+            const searchTerm = this.value.toLowerCase();
+
+            items.forEach(item => {
+                const text = item.querySelector('.card-title').textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+</script>

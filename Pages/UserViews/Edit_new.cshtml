@@ -1,0 +1,96 @@
+﻿@page
+@model Replay.EditModel
+
+@{
+    ViewData["Title"] = "Benutzerkonto bearbeiten";
+}
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benutzerkonto bearbeiten</title>
+    <link rel="stylesheet" href="/css/styles2.css">
+</head>
+<body>
+<div class="container">
+    <h1>Benutzerkonto bearbeiten</h1>
+    <div class="user-info">
+        <h2>@Model.User.Name</h2>
+        <form method="post">
+            <div class="form-group">
+                <label asp-for="User.Name">Name</label>
+                <input asp-for="User.Name" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="User.Email">Email</label>
+                <input asp-for="User.Email" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="User.IsBlocked">Gesperrt</label>
+                <select asp-for="User.IsBlocked" class="form-control">
+                    <option value="false">Nein</option>
+                    <option value="true">Ja</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Rollen</label>
+                <div class="tags" id="roles">
+                    @foreach (var role in Model.User.Roles)
+                    {
+                        <div class="tag-container">
+                            <span class="tag">@role.RoleName</span>
+                            <button type="button" class="remove-btn" onclick="removeTag(this)">-</button>
+                        </div>
+                    }
+                    <button type="button" class="add-btn" onclick="addRole()">+</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Abteilungen</label>
+                <div class="tags" id="departments">
+                    @foreach (var department in Model.User.Departments)
+                    {
+                        <div class="tag-container">
+                            <span class="tag">@department.DepartmentName</span>
+                            <button type="button" class="remove-btn" onclick="removeTag(this)">-</button>
+                        </div>
+                    }
+                    <button type="button" class="add-btn" onclick="addDepartment()">+</button>
+                </div>
+            </div>
+            <input type="hidden" asp-for="User.Email" />
+            <input type="hidden" asp-for="User.PasswordHash" />
+            <input type="hidden" id="rolesInput" name="RolesInput" value="@Model.RolesInput" />
+            <input type="hidden" id="departmentsInput" name="DepartmentsInput" value="@Model.DepartmentsInput" />
+            <button type="submit" class="save-btn">Speichern</button>
+        </form>
+    </div>
+</div>
+
+<div id="role-selection" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('role-selection')">&times;</span>
+        <h2>Wähle eine Rolle</h2>
+        @foreach (var role in Model.Roles)
+        {
+            <button type="button" class="modal-btn" onclick="selectRole('@role.RoleName')">@role.RoleName</button>
+        }
+    </div>
+</div>
+
+<div id="department-selection" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('department-selection')">&times;</span>
+        <h2>Wähle eine Abteilung</h2>
+        @foreach (var department in Model.Departments)
+        {
+            <button type="button" class="modal-btn" onclick="selectDepartment('@department.DepartmentName')">@department.DepartmentName</button>
+        }
+    </div>
+</div>
+
+<script src="~/js/script_edit_user.js"></script>
+</body>
+</html>

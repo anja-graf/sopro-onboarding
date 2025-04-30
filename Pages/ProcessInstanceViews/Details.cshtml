@@ -1,0 +1,155 @@
+@page "{id:int}"
+@model Replay.Pages.ProcessInstanceViews.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="~/css/processInstanceStylesheet.css" rel="stylesheet"/>
+</head>
+<body>
+<div>
+    <h1>@Model.DetailProcessInstance.ProcessInstanceName</h1>
+    <form method="post" asp-page-handler="UpdateInstance" id="process-form">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="respUser">Vorgangsverantwortlicher</label>
+                    <input asp-for="DetailReferenceUserMail" type="text" class="form-control" id="respUser" name="DetailReferenceUserMail" value="@Model.DetailProcessInstance.ResponsibleUser.Email" list="user-list" disabled>
+                    <span asp-validation-for="DetailReferenceUserMail" class="text-danger"></span>
+                    <datalist id="user-list">
+                        @foreach (var user in Model.AllUsers)
+                        {
+                        <option value="@user.Email">@user.Name</option>
+                        }
+                    </datalist>
+
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="refUser">Bezugsperson</label>
+                    <input  type="text" class="form-control" id="refUser" name="RefUserMail" placeholder="E-Mail" list="user-list" value="@Model.DetailProcessInstance.ReferenceUser.Email" disabled>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="department-select">Abteilung</label>
+                    <select name="departmentSelect" id="department-select" disabled>
+                        <option>@Model.DetailProcessInstance.Department.DepartmentName</option>
+                    </select>
+                    <div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="contract-select">Vertragsart</label>
+                    <select name="contractSelect" id="contract-select" disabled>
+                        <option>@Model.DetailProcessInstance.Contract.ContractName</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="date" class="col-sm-2 col-form-label">Zieldatum</label>
+            <div class="col-sm-10">
+                <input asp-for="DetailDueDate" type="date" class="form-control" id="date" name="DetailDueDate" disabled>
+                <span asp-validation-for="DetailDueDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="task-preview">
+            @*for instead of foreach to use list index as html id (Taskname wont worke becuase of spaces and special chars)*@
+            @for (int i = 0; i < Model.DetailProcessInstance.AllTasks.Count; i++)
+            {
+            var tInstance = Model.DetailProcessInstance.AllTasks[i];
+            var safeId = $"task_{i}";
+            <div class="task-preview-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 ps-1">@tInstance.TaskName</h5>
+                    <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#@safeId" aria-expanded="false" aria-controls="@safeId">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </div>
+                <div class="collapse mt-2" id="@safeId">
+                    <div class="card card-body">
+                        <p>Zugewiesen: @tInstance.AssignedRole.RoleName</p>
+                        <p>Fälligkeit: <span class="due-date">@tInstance.DaysRelToProcessInstance</span></p>
+                        <p>@tInstance.Instructions</p>
+                    </div>
+                </div>
+            </div>
+            }
+        </div>
+    </form>
+    <form method="get" asp-page="/ProcessInstanceViews/Edit" asp-route-id="@Model.DetailProcessInstance.Id">
+            <button type="submit" class="start-button">Bearbeiten</button>
+    </form>
+</div>
+</body>
+
+@section scripts
+{
+<script>
+    // change chevron icon, when button is pressed
+    function toggleChevron(event) {
+        var chevronIcon = event.currentTarget.querySelector('.bi');
+        if (chevronIcon.classList.contains('bi-chevron-down')) {
+            chevronIcon.classList.remove('bi-chevron-down');
+            chevronIcon.classList.add('bi-chevron-up');
+        } else {
+            chevronIcon.classList.remove('bi-chevron-up');
+            chevronIcon.classList.add('bi-chevron-down');
+        }
+    }
+
+
+    
+
+    // update dates in taskpreview: When no date selected: Task.DueDatesRel; 
+    // when date for ProcessInstance selected: Calc real duedate and display
+    function updateDueDates() {
+        var targetDate = document.getElementById("date").value;
+        var tasks = document.querySelectorAll('.task-preview-item');
+
+        tasks.forEach(function(task) {
+            var dueDays = parseInt(task.getAttribute('data-due-days'));
+            var dueElement = task.querySelector('.due-date');
+
+            if (targetDate) {
+                var dueDate = new Date(targetDate);
+                dueDate.setDate(dueDate.getDate() + dueDays);
+                dueElement.textContent = dueDate.toLocaleDateString();
+            } else {
+                if (dueDays > 0) {
+                    dueElement.textContent = dueDays + " Tage nach Zieldatum";
+                } else if (dueDays < 0) {
+                    dueElement.textContent = Math.abs(dueDays) + " Tage vor Zieldatum";
+                } else {
+                    dueElement.textContent = "Am Zieldatum";
+                }
+            }
+        });
+    }
+    
+    document.getElementById("date").addEventListener("change", updateDueDates);
+
+    // on page load
+    updateDueDates();
+    // Add event listeners to toggle chevron icons
+    document.querySelectorAll('.task-preview-item button[data-bs-toggle="collapse"]').forEach(function(button) {
+        button.addEventListener('click', toggleChevron);
+    });
+</script>
+}
+
+</html>

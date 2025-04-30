@@ -1,0 +1,80 @@
+﻿@page
+@model Replay.CreateModel
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Benutzerkonto hinzufügen</title>
+    <link rel="stylesheet" href="/css/styles2.css">
+</head>
+<body>
+<div class="container">
+    <h1>Benutzerkonto hinzufügen</h1>
+    <div class="user-info">
+        <form method="post" asp-antiforgery="true">
+            <div asp-validation-summary="ModelOnly" ></div>
+            <div class="form-group">
+                <label asp-for="User.Name">Name</label>
+                <input type="text" id="name" asp-for="User.Name">
+                <span asp-validation-for="User.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="User.Email">Email</label>
+                <input type="email" id="email" asp-for="User.Email">
+                <span asp-validation-for="User.Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="User.Password">Passwort</label>
+                <input type="password" id="password" asp-for="User.Password">
+                <span asp-validation-for="User.Password" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Rollen</label>
+                <div class="tags" id="roles">
+                    <button type="button" class="add-btn" onclick="addRole()">+</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Abteilungen</label>
+                <div class="tags" id="departments">
+                    <button type="button" class="add-btn" onclick="addDepartment()">+</button>
+                </div>
+            </div>
+            <input type="hidden" id="rolesInput" asp-for="RolesInput" />
+            <input type="hidden" id="departmentsInput" asp-for="DepartmentsInput" />
+            <div class="form-group">
+                <input type="submit" value="Speichern" class="save-btn">
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="role-selection" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('role-selection')">&times;</span>
+        <h2>Wähle eine Rolle</h2>
+        @foreach (var role in Model.Roles)
+        {
+            <button type="button" class="modal-btn" onclick="selectRole('@role.RoleName')">@role.RoleName</button>
+        }
+    </div>
+</div>
+
+<div id="department-selection" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal('department-selection')">&times;</span>
+        <h2>Wähle eine Abteilung</h2>
+        @foreach (var department in Model.Departments)
+        {
+            <button type="button" class="modal-btn" onclick="selectDepartment('@department.DepartmentName')">@department.DepartmentName</button>
+        }
+    </div>
+</div>
+
+<script src="\js\script_add_user.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.17.0/jquery.validate.min.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validation.unobtrusive/3.2.10/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

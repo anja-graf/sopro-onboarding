@@ -1,0 +1,125 @@
+﻿@page
+@using Replay.Model
+@model Replay.Pages.TaskViews.TaskDetailModel
+
+@{
+ViewData["Title"] = "Details";
+}
+<html>
+
+<head>
+    <link rel="stylesheet" href="\css\TaskStylesheet.css">
+</head>
+
+<body style="overflow-x: hidden;">
+<div class="frame-1" style="left: 15px;position: relative;">
+    <div >
+        <header class="header">
+            <h1 class="headertext">Detailansicht Aufgabe</h1>
+        </header>
+        <div class="wrapper">
+            <div class="title">Titel:</div>
+            <div class="input-field">
+                <div class="label">
+                    <input disabled="" type="text" name="Title" value="@Model.DisplayTask.TaskName" class="textinput">
+                </div>
+            </div>
+            <div class="title">Zuständig:</div>
+            <div class="input-field">
+                <div class="label">
+                    <input disabled="" name="UserName" type="text" value="@((Model.DisplayTask.AssignedUser != null)?@Model.DisplayTask.AssignedUser.Name : (@Model.DisplayTask.AssignedRole != null)? @Model.DisplayTask.AssignedRole.RoleName :"-")" class="textinput">
+                </div>
+            </div>
+            <div class="title">Fällig am:</div>
+            <div class="input-field">
+                <div class="label">
+                    @*<input disabled="" type="date" min="2024-01-01" class="selectdate" value="@Model.DisplayTask.DueDate.ToString("yyyy-MM-dd")">*@
+                </div>
+            </div>
+            <div class="title">Fortschritt:</div>
+            <div class="input-field">
+                <div class="label">
+                    <input disabled="" type="text" name="taskStatus" value="@TranslationStatus.getTranslation(Model.DisplayTask.TaskStatus)" class="textinput">
+                </div>
+            </div>
+
+            <div class="title">Anleitung:</div>
+            <textarea hidden type="text" name="instructions" class="input-field textinputXL" id="area" >@Model.DisplayTask.Instructions</textarea>
+            <div hidden class="title"></div>
+            <div class="input-field textinputXL" id="output"></div>
+        </div>
+            <div class="buttonarea" >
+                <div class="secondary button" >
+                    <button type="button" class="buttonlabel label" data-id="23:945" onclick="redirectToTaskList()">Zurück</button>
+                </div>
+                <!-- Form for deleting the task -->
+                <form method="post" asp-page-handler="Delete">
+                    <input type="hidden" name="taskId" value="@Model.DisplayTask.Id"/>
+                    <div class="secondary button">
+                        <input type="submit" class="buttonlabel label" id="delete" value="Löschen" onclick="return confirm('Wollen Sie wirklich diese Aufgabe löschen?')">
+                    </div>
+                </form>
+
+                <div class="secondary button">
+                    <a style="text-decoration: none;" href="/TaskViews/Edit?taskId=@Model.DisplayTask.Id" class="buttonlabel label">Bearbeiten</a>
+                </div>
+
+                <!-- Form for updating the task status -->
+                <form method="post" asp-page-handler="UpdateTaskStatus" id="updateTaskStatusForm">
+                    <input type="hidden" name="TaskId" value="@Model.DisplayTask.Id" />
+                    <input type="hidden" name="NewStatus" id="newStatus" />
+                    @*// Use real html*@
+                    @if (Model.DisplayTask.TaskStatus != Status.FINISHED)
+                    {
+                    <div class="primary button" data-id="23:944">
+                        @if (Model.DisplayTask.TaskStatus == Status.NOT_STARTED)
+                        {
+                        <button type="button" class="buttonlabel label"onclick="updateTaskStatus('IN_PROGRESS')">Mir zuweisen</button>
+                        }
+                        else if (Model.DisplayTask.TaskStatus == Status.IN_PROGRESS)
+                        {
+                        <button type="button" class="buttonlabel label"  onclick="updateTaskStatus('FINISHED')">Beenden</button>
+                        }
+                    </div>
+                    }
+
+                </form>
+
+            </div>
+    </div>
+
+</div>
+
+
+<script>
+    function updateTaskStatus(newStatus) {
+        document.getElementById('newStatus').value = newStatus;
+        document.getElementById('updateTaskStatusForm').submit();
+    }
+
+    function redirectToTaskList() {
+        window.location.href = 'TaskList';
+    }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script>
+    // initialize markdown-it library
+    var md = window.markdownit();
+    var editor = document.getElementById('area');
+    var output = document.getElementById('output');
+
+    editor.addEventListener('input', function() {
+        // parse the Markdown into HTML
+        var html = md.render(editor.value);
+        // output the HTML
+        output.innerHTML = html;
+    });
+    window.onload = function load() {
+        var html = md.render(editor.value);
+        output.innerHTML = html;
+    }
+</script>
+</body>
+
+</html>
+

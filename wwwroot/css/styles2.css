@@ -1,0 +1,254 @@
+:root {
+    --white: #ffffff;
+    --grey1: #dbdbdb;
+    --grey2: #afafaf;
+    --grey3: #626262;
+    --licorice: #141210;
+    --amaranth: #e61d47;
+    --font-family-league-spartan: 'League Spartan', sans-serif;
+    --font-family-sans: 'Open Sans', sans-serif;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-family-sans);
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    text-align: center;
+    justify-content: center;
+    background-color: var(--white);
+    color: var(--licorice);
+}
+
+.container {
+    padding: 20px;
+    text-align: center;
+}
+
+h1 {
+    color: var(--amaranth);
+    margin-bottom: 20px;
+    font-family: var(--font-family-league-spartan);
+}
+
+
+.user-info h2 {
+    margin-bottom: 20px;
+    font-size: 1.5em;
+    font-family: var(--font-family-league-spartan);
+}
+
+.form-group {
+    margin-bottom: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group select {
+    width: 40%;
+    padding: 10px;
+    border: 1px solid var(--grey1);
+    border-radius: 5px;
+    font-size: 1em;
+}
+
+.tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tag-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.tag {
+    background-color: var(--grey1);
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.add-btn, .remove-btn {
+    background-color: var(--amaranth);
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1.5em;
+    line-height: 30px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.save-btn {
+    width: 10%;
+    padding: 15px;
+    background-color: var(--amaranth);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    font-size: 1em;
+    cursor: pointer;
+}
+
+.save-btn:hover {
+    background-color: color-mix(in srgb, var(--amaranth) 80%, black);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding-top: 60px;
+}
+
+.modal-content {
+    background-color: var(--white);
+    margin: 5% auto;
+    padding: 20px;
+    border: 1px solid var(--grey2);
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.close {
+    color: var(--grey2);
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: var(--licorice);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.modal-btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    background-color: var(--amaranth);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.details-view .tag {
+    cursor: default;
+    opacity: 0.8;
+}
+
+.details-view {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: var(--white);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    text-align: center;
+}
+
+.details-view h1 {
+    font-size: 1.8em;
+    color: var(--amaranth);
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+}
+
+.details-view .form-group {
+    background-color: var(--grey1);
+    border-radius: 5px;
+    padding: 12px;
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.details-view .form-group label {
+    color: var(--amaranth);
+    font-size: 1em;
+    margin-bottom: 5px;
+}
+
+.details-view .form-group p {
+    font-size: 1.1em;
+    color: var(--licorice);
+    margin: 0;
+}
+
+.details-view .tags {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 5px;
+}
+
+.details-view .tag {
+    background-color: var(--amaranth);
+    color: var(--white);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.9em;
+    margin: 2px;
+}
+
+.details-save-btn {
+    padding: 15px 25px;
+    font-size: 1em;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 20px;
+    background-color: var(--amaranth);
+    color: var(--white);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: auto; /* Ensure the button width is auto */
+}
+
+.details-save-btn:hover {
+    background-color: color-mix(in srgb, var(--amaranth) 80%, black);
+}
+
+.details-save-btn:focus {
+    outline: none;
+}
+
+@media (max-width: 600px) {
+    .details-view {
+        padding: 20px;
+    }
+}
+

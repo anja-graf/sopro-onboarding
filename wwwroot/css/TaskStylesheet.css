@@ -1,0 +1,292 @@
+﻿@import url("https://fonts.googleapis.com/css?family=Inter:500,600");
+
+:root {
+    --abbey: #4d5456;
+    --black: #000000;
+    --bon-jour: #ccd4d9;
+    --licorice: #141210;
+    --red: #e61d47;
+
+    --font-size-l: 25px;
+    --font-size-m: 17px;
+    --font-size-s: 10px;
+    --font-size-xl: 48px;
+
+    --font-family-inter: Roboto,sans-serif;
+}
+
+
+.frame-1 .buttonlabel {
+    color: var(--black);
+    font-family: var(--font-family-inter);
+    font-size: var(--font-size-m);
+    font-style: normal;
+    font-weight: 500;
+    position: relative;
+    text-align: center;
+    width: 100px;
+    outline-color: transparent;
+    border-color: transparent;
+    text-align: center;
+    width: 300px;
+}
+
+.frame-1 .header {
+    /* position: absolute; */
+    top: 0px;
+}
+
+.frame-1 .headertext {
+    color: var(--red);
+    font-family: var(--font-family-inter);
+    font-size: var(--font-size-xl);
+    font-style: normal;
+    font-weight: 300;
+    height: 72px;
+    left: 64px;
+    letter-spacing: -0.48px;
+    line-height: 72px;
+    text-align: left;
+    top: 32px;
+    white-space: nowrap;
+    width: auto;
+    background-color: transparent;
+    font-style: normal;
+    /* position: absolute; */
+    text-align: left;
+}
+
+.frame-1 .label {
+    background-color: transparent;
+    letter-spacing: 0.00px;
+    line-height: 25px;
+    /* position: relative; */
+    width: -webkit-fill-available;
+}
+
+.frame-1 .title {
+    display: inline;
+    float: inline-start;
+    background-color: transparent;
+    /* position: unset; */
+    align-items: flex-start;
+    display: inline-flex;
+    flex-direction: column;
+    gap: 8px;
+    left: 297px;
+    color: var(--licorice);
+    font-family: var(--font-family-inter);
+    font-size: var(--font-size-l);
+    font-style: normal;
+    font-weight: 300;
+}
+
+.frame-1 .button {
+    object-position: center;
+    text-align: center;
+    align-items: center;
+    border-radius: 8px;
+    display: flex;
+    gap: 8px;
+    height: 50px;
+    justify-content: center;
+    padding: 0px 16px;
+    width: 130px;
+    margin: 20px 0px 20px 15px;
+}
+
+.button::after {
+
+}
+
+.buttonarea {
+    display: flex;
+    float: right;
+    margin-right: 30px;
+}
+
+.frame-1::after {
+    content:" ";
+    padding: 100px;
+
+
+}
+
+.primary {
+    background-color: var(--red);
+}
+
+.secondary {
+    border: 2px solid var(--red);
+}
+
+.frame-1 .input-field {
+    background-color: var(--white);
+    border: 1px solid;
+    border-color: var(--bon-jour);
+    border-radius: 8px;
+    box-shadow: 0px 1px 2px #0000000d;
+    position: relative;
+    width: -webkit-fill-available;
+    /* left:500px; */
+    margin-right: 30px;
+    align-items: flex-start;
+    /*display: flex;*/
+    padding: 6px 16px;
+    margin: 0px 30px 0px 0px;
+}
+
+.frame-1 .dropdown {
+    align-items: center;
+    border: 1px solid;
+    border-color: var(--bon-jour);
+    border-radius: 8px;
+    display: flex;
+    gap: 16px;
+    padding: 8px 16px;
+    position: static;
+    width: -webkit-fill-available;
+    /* left:500px; */
+    height: 40px;
+    margin: 0px 30px 0px 0px;
+}
+
+.dropdown {
+    border-color: var(--bon-jour);
+    background-color: transparent;
+    letter-spacing: 0.00px;
+    line-height: 25px;
+    position: relative;
+    font-family: Roboto, sans-serif;
+    color: var(--abbey);
+    font-family: var(--font-family-inter);
+    font-size: var(--font-size-m);
+    font-style: normal;
+    font-weight: 300;
+    border-width: inherit;
+    width: -webkit-fill-available;
+    height: 50px;
+    left: 500px;
+    border: none;
+    outline-color: transparent;
+}
+
+.dropdown-element {
+    font-family: Roboto, sans-serif;
+    color: var(--abbey);
+    font-family: var(--font-family-inter);
+    font-size: var(--font-size-m);
+    font-style: normal;
+    font-weight: 300;
+    border-color: white;
+}
+
+
+.select-items div,.select-selected {
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-color: transparent transparent rgba(0, 0, 0, 0.1) transparent;
+    cursor: pointer;
+}
+.selectdate {
+    background-color: transparent;
+    letter-spacing: 0.00px;
+    line-height: 25px;
+    position: relative;
+    font-family: Roboto, sans-serif;
+    color: var(--abbey);
+    font-family: var(--font-family-inter);
+    font-size: var(--font-size-m);
+    font-style: normal;
+    font-weight: 300;
+    border-color: white;
+    border-width: inherit;
+    width: -webkit-fill-available;
+    border: none;
+    outline-color: transparent;
+    /*margin-right: 480px;*/
+}
+
+.textinput {
+    background-color: transparent;
+    letter-spacing: 0.00px;
+    line-height: 25px;
+    position: relative;
+    font-family: Roboto, sans-serif;
+    color: var(--abbey);
+    font-family: var(--font-family-inter);
+    font-size: var(--font-size-m);
+    font-style: normal;
+    font-weight: 300;
+    border-color: white;
+    border-width: inherit;
+    width: 470px;
+    border: none;
+    outline-color: transparent;
+    width: -webkit-fill-available;
+}
+
+
+.textinputXL {
+    background-color: transparent;
+    letter-spacing: 0.00px;
+    line-height: 25px;
+    position: relative;
+    font-family: Roboto, sans-serif;
+    color: var(--abbey);
+    font-family: var(--font-family-inter);
+    font-size: var(--font-size-m);
+    font-style: normal;
+    font-weight: 300;
+    border-color: white;
+    border-width: inherit;
+    height: fit-content;
+    
+    border: none;
+    outline-color: transparent;
+    min-height: 40px;
+}
+
+.sidenav a, .dropdown-btn {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    color: var(--licorice);
+    font-weight: 450;
+    font-size: 22px;
+    display: block;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    outline: none;
+    font-family: var(--font-family-inter);
+    line-height: 33px;
+}
+
+.dropdown-container a {
+    padding-bottom: 0px;
+    padding-top: 0px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.dynamic {
+
+}
+
+.wrapper {
+    display: grid;
+    grid-template-areas:
+        "a  b";
+    align-items: start;
+    grid-template-columns: 1fr 5fr;
+    row-gap: 15px;
+}
+
+input[type="text"]::-webkit-calendar-picker-indicator,
+input[type="email"]::-webkit-calendar-picker-indicator,
+input[type="number"]::-webkit-calendar-picker-indicator,
+input[type="search"]::-webkit-calendar-picker-indicator {
+    display: none !important;
+}

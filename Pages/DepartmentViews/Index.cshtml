@@ -1,0 +1,31 @@
+@page
+@model Replay.Pages.DepartmentViews.IndexModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Department) {
+    <tr>
+        <td>@item.DepartmentName</td>
+        <td>
+            <a asp-page="./Edit" asp-route-id="@item.DepartmentName">Edit</a> |
+            <a asp-page="./Details" asp-route-id="@item.DepartmentName">Details</a> |
+            <a asp-page="./Delete" asp-route-id="@item.DepartmentName">Delete</a>
+        </td>
+    </tr>
+}
+    </tbody>
+</table>

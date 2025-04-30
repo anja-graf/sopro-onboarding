@@ -1,0 +1,184 @@
+@page "{id:int}"
+@using Replay.Model
+@model Replay.Pages.ProcessInstanceViews.EditModel
+
+@{
+ViewData["Title"] = @Model.EditProcessInstance.ProcessInstanceName + " bearbeiten";
+}
+
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="~/css/processInstanceStylesheet.css" rel="stylesheet"/>
+</head>
+<body>
+<div>
+    <h1>@Model.EditProcessInstance.ProcessInstanceName</h1>
+    <form method="post" asp-page-handler="UpdateInstance" id="process-form">
+        <input type="hidden" name="ProcessInstanceId" value="@Model.EditProcessInstance.Id"/>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="respUser">Vorgangsverantwortlicher</label>
+                    <input asp-for="EditResponsibleUserMail" type="text" class="form-control" id="respUser" name="EditResponsibleUserMail" value="@Model.EditProcessInstance.ResponsibleUser.Email" list="user-list">
+                    <span asp-validation-for="EditResponsibleUserMail" class="text-danger"></span>
+                    <datalist id="user-list">
+                        @foreach (var user in Model.AllUsers)
+                        {
+                        <option value="@user.Email">@user.Name</option>
+                        }
+                    </datalist>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="refUser">Bezugsperson</label>
+                    <input type="text" class="form-control" id="refUser" name="RefUserMail" placeholder="E-Mail" list="user-list" value="@Model.EditProcessInstance.ReferenceUser.Email" disabled>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="department-select">Abteilung</label>
+                    <select name="departmentSelect" id="department-select" disabled>
+                        <option>@Model.EditProcessInstance.Department.DepartmentName</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="contract-select">Vertragsart</label>
+                    <select name="contractSelect" id="contract-select" disabled>
+                        <option>@Model.EditProcessInstance.Contract.ContractName</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="date" class="col-sm-2 col-form-label">Zieldatum</label>
+            <div class="col-sm-10">
+                <input asp-for="EditDueDate" type="date" class="form-control" id="date" name="EditDueDate" value="@Model.EditProcessInstance.DueDate.ToString("yyyy-MM-dd")">
+                <span asp-validation-for="EditDueDate" class="text-danger"></span>
+            </div>
+        </div>
+    </form>
+
+    <div class="task-preview">
+        @for (int i = 0; i < Model.EditProcessInstance.AllTasks.Count; i++)
+        {
+        var tInstance = Model.EditProcessInstance.AllTasks[i];
+        var safeId = $"task_{i}";
+        <div class="task-preview-item" data-due-days="@tInstance.DaysRelToProcessInstance">
+            <div class="d-flex justify-content-between align-items-center">
+                <h5 class="mb-0 ps-1">@tInstance.TaskName</h5>
+                <div class="task-item-buttons">
+                    <form method="get" asp-page="/TaskViews/Edit" class="d-inline">
+                        <input type="hidden" name="taskId" value="@tInstance.Id">
+                        <input type="hidden" name="processInstanceId" value="@Model.EditProcessInstance.Id">
+                        <button class="btn" type="submit">
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+                    </form>
+                    <form method="post" asp-page-handler="DeleteTaskInstance" class="d-inline">
+                        <input type="hidden" name="taskInstanceId" value="@tInstance.Id">
+                        <input type="hidden" name="processInstanceId" value="@Model.EditProcessInstance.Id">
+                        <button class="btn" type="submit">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </form>
+                    
+                    <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#@safeId" aria-expanded="false" aria-controls="@safeId">
+                        <i class="bi bi-chevron-down"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="collapse mt-2" id="@safeId">
+                <div class="card card-body">
+                    @if (tInstance.AssignedUser != null)
+                    {
+                    <p>Zugewiesen: @tInstance.AssignedUser.Name</p>
+                    }
+                    else
+                    {
+                    <p>Zugewiesen: @tInstance.AssignedRole.RoleName</p>
+                    }
+                    <p>Fälligkeit: <span class="due-date">@Model.EditProcessInstance.DueDate.AddDays(tInstance.DaysRelToProcessInstance)</span></p>
+                    <p>Status: @TranslationStatus.getTranslation(tInstance.TaskStatus)</p>
+                    @if (!String.IsNullOrEmpty(tInstance.Instructions))
+                    {
+                    <div class="instruction-box">
+                        <p>@tInstance.Instructions</p>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+        }
+        <form method="get" asp-page="/TaskViews/Create" class="d-inline">
+            <input type="hidden" name="processInstanceId" value="@Model.EditProcessInstance.Id">
+            <button class="btn task-item-add-button" type="submit"><i class="bi bi-plus-square"></i></button>
+        </form>
+    </div>
+
+    <button type="button" class="start-button" id="saveButton">Speichern</button>
+</div>
+</body>
+
+@section scripts
+{
+<script>
+    document.getElementById('saveButton').addEventListener('click', function() {
+        document.getElementById('process-form').submit();
+    });
+
+    // Update dates in task preview
+    function updateDueDates() {
+        var targetDate = document.getElementById("date").value;
+        var tasks = document.querySelectorAll('.task-preview-item');
+
+        tasks.forEach(function(task) {
+            var dueDays = parseInt(task.getAttribute('data-due-days'));
+            var dueElement = task.querySelector('.due-date');
+
+            if (dueElement) {
+                if (targetDate) {
+                    var dueDate = new Date(targetDate);
+                    dueDate.setDate(dueDate.getDate() + dueDays);
+                    dueElement.textContent = dueDate.toLocaleDateString();
+                } else {
+                    dueElement.textContent = "Kein Zieldatum gesetzt";
+                }
+            }
+        });
+    }
+
+    document.getElementById("date").addEventListener("change", updateDueDates);
+
+    // On page load
+    updateDueDates();
+
+    // Add event listeners to toggle chevron icons
+    document.querySelectorAll('.task-preview-item button[data-bs-toggle="collapse"]').forEach(function(button) {
+        button.addEventListener('click', toggleChevron);
+    });
+
+    // Change chevron icon when button is pressed
+    function toggleChevron(event) {
+        var chevronIcon = event.currentTarget.querySelector('.bi');
+        if (chevronIcon.classList.contains('bi-chevron-down')) {
+            chevronIcon.classList.remove('bi-chevron-down');
+            chevronIcon.classList.add('bi-chevron-up');
+        } else {
+            chevronIcon.classList.remove('bi-chevron-up');
+            chevronIcon.classList.add('bi-chevron-down');
+        }
+    }
+</script>
+}
+
+</html>

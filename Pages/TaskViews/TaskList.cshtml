@@ -1,0 +1,328 @@
+@page
+
+@using Replay.Model
+@model Replay.Pages.TaskViews.TaskList
+
+@{
+Layout = "Shared/_Layout";
+ViewData["Title"] = "Task List";
+}
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="lib/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="~/css/tasklist.css" rel="stylesheet"/>
+</head>
+<body>
+
+@if (Model.AllTasks.Count == 0)
+{
+<p>HELP</p>
+}
+
+<h1>Aufgabenliste</h1>
+<div class="row mb-3">
+    <div class="col-sm-3 searchbar me-5">
+        <i class="bi bi-search"></i>
+        <input id="searchInput" class="search-field" type="text" placeholder="Durchsuche Aufgaben..."/>
+    </div>
+    <div class="col-sm filter-bar">
+        <div class="dropdown">
+            <button class="btn dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="bi bi-funnel-fill"></i>Bitte wählen Sie eine Option
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                <li>
+                    <a class="dropdown-item" href="#" id="date_asc"><i class="bi bi-calendar-plus-fill"></i> Datum (aufsteigend)</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" id="date_desc"><i class="bi bi-calendar-minus-fill"></i> Datum (absteigend)</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" id="status_asc"><i class="bi bi-clipboard2-x-fill"></i>Status (aufsteigend)</a>
+                </li>
+                <li>
+                    <a class="dropdown-item" href="#" id="status_desc"><i class="bi bi-clipboard2-check-fill"></i> Status (absteigend)</a>
+                </li>
+                
+            </ul>
+        </div>
+    </div>
+</div>
+
+<table class="table">
+    <thead>
+    <tr>
+        <th>Vorgang</th>
+        <th>Aufgabe</th>
+        <th>Bezugsperson</th>
+        <th>Fortschritt</th>
+        <th>Fälligkeit</th>
+        <th>Aktion</th>
+    </tr>
+    </thead>
+    <tbody id="taskTable">
+    @foreach (var task in Model.AllTasks)
+    {
+    <tr class="task-row">
+        <td> @task.ProcessName</td>
+        <td>
+            <a href="~/TaskViews/Details?taskId=@task.Id">@task.TaskName</a>
+        </td>
+        <td>@task.ResponsibleUserName</td>
+        <td>
+            @if (task.Status == Status.FINISHED)
+            {
+            <p>Abgeschlossen</p>
+            }
+            else if (task.Status == Status.IN_PROGRESS)
+            {
+            <p>In Bearbeitung</p>
+            }
+            else
+            {
+            <p>Unbearbeitet</p>
+            }
+        </td>
+        <td>@task.DueDate</td>
+        <td>
+            @if (task.Status == Status.NOT_STARTED)
+            {
+            <button type="button" class="btn edit-button"
+                    data-processname="@task.ProcessName"
+                    data-referenceuser="@task.ReferenceUserName"
+                    data-taskid="@task.Id"
+                    data-taskname="@task.TaskName"
+                    data-newstatus="@Status.IN_PROGRESS"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                Mir zuweisen
+            </button>
+            }
+            else if (task.Status == Status.IN_PROGRESS)
+            {
+            <button type="button" class="btn edit-button"
+                    data-processname="@task.ProcessName"
+                    data-referenceuser="@task.ReferenceUserName"
+                    data-taskid="@task.Id"
+                    data-taskname="@task.TaskName"
+                    data-newstatus="@Status.FINISHED"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal">
+                Beenden
+            </button>
+            }
+            else
+            {
+            <p class="task-already-finished-dash">-</p>
+            }
+        </td>
+    </tr>
+    }
+    </tbody>
+</table>
+
+<!-- Confirm Popup -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Achtung</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+                <form method="post" asp-page-handler="UpdateTaskStatus" id="statusForm">
+                    <input type="hidden" name="TaskId" id="taskId"/>
+                    <input type="hidden" name="NewStatus" id="newStatus"/>
+                </form>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nein</button>
+                <button type="button" class="btn btn-primary" id="confirmButton">Ja</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+
+<script>
+    $(document).ready(function() {
+        $('#filterDropdown').parent().find('.dropdown-item').on('click', function() {
+            var selectedOptionId = $(this).attr('id');
+            $('#filterDropdown').text($(this).text());
+            console.log(selectedOptionId);
+            if (selectedOptionId === 'date_asc') {
+                sortTasksByDateAsc();
+            } else if (selectedOptionId === 'date_desc') {
+                sortTasksByDateDesc();
+            } else if (selectedOptionId === 'status_asc') {
+                filterTasksByStatusAsc();
+            } else if (selectedOptionId === 'status_desc') {
+                filterTasksByStatusDesc();
+            }
+        });
+        function sortTasksByDateAsc() {
+            var $taskRows = $('tbody tr').detach().toArray();
+            console.log($taskRows)
+            $taskRows.sort(function(a, b) {
+                var dateA = parseDate($(a).find('td:nth-child(5)').text());  // Funktion zum Parsen des Datums
+                var dateB = parseDate($(b).find('td:nth-child(5)').text());
+                return dateA - dateB;
+            });
+            console.log($taskRows)
+            $('tbody').append($taskRows);
+        }
+
+        function sortTasksByDateDesc() {
+            var $taskRows = $('tbody tr').detach().toArray();
+            console.log($taskRows)
+            $taskRows.sort(function(a, b) {
+                var dateA = parseDate($(a).find('td:nth-child(5)').text());  // Funktion zum Parsen des Datums
+                var dateB = parseDate($(b).find('td:nth-child(5)').text());
+                return dateB - dateA;
+            });
+            console.log($taskRows)
+            $('tbody').append($taskRows);
+        }
+
+        // FINISHED > IN_PROGRESS > NOT_STARTED
+        var statusOrder = {
+            'Abgeschlossen' : 3,
+            'In Bearbeitung' : 2,
+            'Unbearbeitet' : 1
+        };
+
+        function filterTasksByStatusAsc() {
+            var $taskRows = $('tbody tr').detach().toArray();
+            $taskRows.sort(function(a, b) {
+                var statusA = $(a).find('td:nth-child(4)').text().trim();  
+                var statusB = $(b).find('td:nth-child(4)').text().trim();
+                return statusOrder[statusA] - statusOrder[statusB];
+            });
+            $('tbody').append($taskRows);
+        }
+        function filterTasksByStatusDesc() {
+            var $taskRows = $('tbody tr').detach().toArray();
+            $taskRows.sort(function(a, b) {
+                var statusA = $(a).find('td:nth-child(4)').text().trim();  
+                var statusB = $(b).find('td:nth-child(4)').text().trim();
+                return statusOrder[statusB] - statusOrder[statusA];
+            });
+            $('tbody').append($taskRows);
+        }
+
+
+        function parseDate(dateString) {
+            // Assume: date is in DD.MM.YYYY Format
+            var parts = dateString.split('.');
+            if (parts.length !== 3) return new Date(0);
+            var day = parseInt(parts[0], 10);
+            var month = parseInt(parts[1], 10) - 1;  // Month is 0 indexed???????? 
+            var year = parseInt(parts[2], 10);
+            return new Date(year, month, day);
+        }
+
+
+
+
+        // Clear search text on page reload
+        localStorage.removeItem("savedSearchText");
+
+        // Restore search text from localStorage if available
+        var savedSearchText = localStorage.getItem("savedSearchText");
+        if (savedSearchText) {
+            $('#searchInput').val(savedSearchText);
+            $('#searchInput').trigger('input'); // Trigger input event to perform search (idk if this works?)
+        }
+
+        $('.search-field').on('input', function() {
+            var searchText = $(this).val().toLowerCase().trim().split(/\s+/);
+            localStorage.setItem("savedSearchText", $(this).val());
+
+            $('tbody tr').each(function() {
+                var rowText = $(this).find('td:nth-child(1), td:nth-child(2), td:nth-child(3)')
+                    .map(function() {
+                        return $(this).text().trim().replace(/\s+/g, '');
+                    })
+                    .get().join(' ').toLowerCase().replace(/\s+/g, '');
+
+                var matchAllParts = searchText.every(function(part) {
+                    return rowText.includes(part);
+                });
+
+                if (matchAllParts) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+
+
+        const editButtons = document.querySelectorAll('.edit-button');
+        const modalMessage = document.getElementById('modalMessage');
+        const taskIdInput = document.getElementById('taskId');
+        const newStatusInput = document.getElementById('newStatus');
+        const confirmButton = document.getElementById('confirmButton');
+
+        editButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const taskId = this.dataset.taskid;
+                const processName = this.dataset.processname;
+                const referenceUser = this.dataset.referenceuser;
+                const taskName = this.dataset.taskname;
+                const newStatus = this.dataset.newstatus;
+                taskIdInput.value = taskId;
+                newStatusInput.value = newStatus;
+
+                if (newStatus === 'IN_PROGRESS') {
+                    modalMessage.innerHTML = `Wollen Sie '${processName}: ${taskName}' für '${referenceUser}' wirklich starten?<br><strong>Andere Nutzer können diese Aufgabe dann nicht mehr sehen!</strong>`;
+                } else {
+                    modalMessage.innerHTML = `Wollen Sie '${processName}: ${taskName}' für '${referenceUser}' wirklich beenden?<br><strong>Der Status kann anschließend nicht mehr geändert werden!</strong>`;
+                }
+            });
+        });
+
+        confirmButton.addEventListener('click', function() {
+            $.ajax({
+                type: 'POST',
+                url: '/TaskViews/TaskList?handler=UpdateTaskStatus',
+                data: $('#statusForm').serialize(),
+                success: function(response) {
+                    var taskId = taskIdInput.value;
+                    var newStatus = newStatusInput.value;
+                    var taskRow = $(`button[data-taskid='${taskId}']`).closest('tr');
+                    if (newStatus === 'IN_PROGRESS') {
+                        taskRow.find('td:nth-child(4)').html('<p>In Bearbeitung</p>');
+                        var actionButton = taskRow.find('td:nth-child(6) button');
+                        actionButton.data('newstatus', 'FINISHED');
+                        actionButton.text('Beenden');
+                        actionButton.attr('data-newstatus', 'FINISHED'); // Sicherstellen, dass das Attribut korrekt gesetzt wird
+                    } else if (newStatus === 'FINISHED') {
+                        taskRow.find('td:nth-child(4)').html('<p>Abgeschlossen</p>');
+                        taskRow.find('td:nth-child(6)').html('<p class="task-already-finished-dash">-</p>');
+                    }
+                    $('#exampleModal').modal('hide');
+                },
+                error: function(error) {
+                    console.log('Error updating task status:', error);
+                }
+            });
+        });
+    });
+</script>
+}
+
+
+
+
+</body>
+</html>

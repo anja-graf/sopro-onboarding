@@ -1,0 +1,607 @@
+@page
+@using Microsoft.EntityFrameworkCore.Metadata.Internal
+@using Replay.Model
+@model Replay.Pages.ProcessBlueprintViews.Editmodel
+
+@{
+    ViewData["Title"] = "Bearbeiten";
+}
+
+<head>
+    <link href="~/css/site.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="/css/processBlueprintStylesheet.css"/>
+</head>
+<p>@Model.ToUpdateTaskBlueprintName</p>
+<h1>Template Bearbeiten</h1>
+
+<div class="row">
+<div>
+    <input type="text" id="ToEditProcessBlueprintName" name="ToEditProcessBlueprintName" class="input" placeholder="Namen des Prozesses eingeben" value="@Model.ToEditProcessBlueprint.ProcessBlueprintName" disabled/>
+    <span class="text-danger">@Html.ValidationMessage("ToEditProcessBlueprintName")</span>
+</div>
+<div class="container">
+    <div class="create-container" id="NewTaskBlueprint">
+        <h3 id="createTaskHeader">Neue Aufgabe erstellen</h3>
+        <h3 id="updateTaskHeader" style="display: none;">Aufgabe aktualisieren</h3>
+        <div class="form-group">
+            <div class="input-wrapper">
+                <label for="NewTaskBlueprintName">Aufgabenname:</label>
+                <input type="text" id="NewTaskBlueprintName" name="NewTaskBlueprintName" placeholder="Aufgabenname" value="@Model.NewTaskBlueprint.TaskName"/>
+            </div>
+            <span class="text-danger">@Html.ValidationMessage("TaskName")</span>
+        </div>
+
+
+        <div class="form-group">
+            <div class="input-wrapper">
+            <label for="DueDateTypeSelect">Fälligkeit:</label>
+            <select id="DueDateTypeSelect" name="DueDateSelect">
+                @foreach (var dType in Model.AvailableDueDateTypes)
+                {
+                    if (dType.ToString() == Model.NewTaskBlueprint.DueDateType)
+                    {
+                        <option value="@dType" selected>@DueDateTypeHelper.GetStringTranslation(dType)</option>
+                    }
+                    else
+                    {
+                        <option value="@dType">@DueDateTypeHelper.GetStringTranslation(dType)</option>
+                    }
+                }
+            </select>
+            </div>
+            <span class="text-danger">@Html.ValidationMessage("DueDateType")</span>
+        </div>
+
+        <div class="form-group" id="dueDateGroup" style="display: none;">
+            <div class="input-wrapper">
+            <label for="NewTaskBlueprintDays">Tage bis Fälligkeit: </label>
+            <input type="number" id="NewTaskBlueprintDays" name="NewTaskBlueprintDays" placeholder="0" value="@Model.NewTaskBlueprint.DaysRelativeToDueDate" step="1"/>
+            </div>
+            <span class="text-danger">@Html.ValidationMessage("DaysRelativeToDueDate")</span>
+        </div>
+
+        <div class="form-group">
+            <div class="input-wrapper">
+                <label for="ods-01">Verantwortlich: </label>
+                <div class="optgroup-dropdown-select" id="ods-01">
+                    <button class="btn dropdown-toggle" type="button" id="responsibilityDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Zuständigkeit festlegen
+                    </button>
+                    <!--Todo: only one for loop to determine Role pos; too lazy atm-->
+                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                        <div class="upper-select">
+                            <li>
+                                <div class="uppper-select-heading">Person wählen</div>
+                            </li>
+                            @foreach (var role in Model.AvailableRoles)
+                            {
+                                if (role.RoleName == "Vorgangsverantwortlicher" || role.RoleName == "Bezugsperson")
+                                {
+                                    <div class="optgroup-item">
+
+                                        <input type="radio" id="ods-01-@role.Id" name="respRole" onchange="updateResponsibilityDropdownText()" @(role.Id == Model.NewTaskBlueprint.PermittedRoleId ? "checked" : "") value="@role.RoleName"/>
+                                        <label for="ods-01-@role.Id">@role.RoleName</label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="lower-select">
+                            <li>
+                                <div class="lower-select-heading">Rolle wählen</div>
+                            </li>
+                            @foreach (var role in Model.AvailableRoles)
+                            {
+                                if (role.RoleName != "Vorgangsverantwortlicher" && role.RoleName != "Bezugsperson")
+                                {
+                                    <div class="optgroup-item">
+                                        <input type="radio" id="ods-01-@role.Id" name="respRole" onchange="updateResponsibilityDropdownText()" @(role.Id == Model.NewTaskBlueprint.PermittedRoleId ? "checked" : "") value="@role.RoleName"/>
+                                        <label for="ods-01-@role.Id">@role.RoleName</label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </ul>
+                </div>
+            </div>
+            <span class="text-danger">@Html.ValidationMessage("PermittedRoleId")</span>
+        </div>
+        <div class="form-group">
+            <div class="input-wrapper">
+                <label for="ms-01">Abteilungen: </label>
+                <div class="multiselect-dropdown" id="ms-01">
+                    <button class="btn dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                        Abteilungen wählen
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                        @foreach (var dep in Model.AvailableDepartments)
+                        {
+                            <li>
+                                <div class="multiselect-item">
+                                    <input type="checkbox" id="ms-01_@dep.DepartmentName" value="@dep.Id" name="ms-01"
+                                           @(Model.NewTaskBlueprint.PermittedDepartmentIds.Contains(dep.Id.ToString()) ? "checked" : "")
+                                           onchange="updateDropdownText('ms-01', 'Departments wählen')"/>
+                                    <label for="ms-01_@dep.DepartmentName">@dep.DepartmentName</label>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+            <span class="text-danger">@Html.ValidationMessage("PermittedDepartmentIds")</span>
+        </div>
+
+        <div>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <label for="ms-02">Vertragsarten: </label>
+                    <div class="multiselect-dropdown" id="ms-02">
+                        <button class="btn dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            Vertragsarten wählen
+                        </button>
+                        <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                            @foreach (var contract in Model.AvailableContractTypes)
+                            {
+                                <li>
+                                    <div class="multiselect-item">
+                                        <input type="checkbox" id="ms-02_@contract.ContractName" value="@contract.Id" @(Model.NewTaskBlueprint.PermittedContractTypeIds.Contains(contract.Id.ToString()) ? "checked" : "") name="ms-02" onchange="updateDropdownText('ms-02', 'Vertragsarten wählen')"/>
+                                        <label for="ms-02_@contract.ContractName">@contract.ContractName</label>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+                <span class="text-danger">@Html.ValidationMessage("PermittedContractTypeIds")</span>
+            </div>
+
+            <div class="form-group instructions-container">
+                <div class="input-wrapper">
+                    <label for="instructions">Anleitung:</label>
+                    <textarea class="form-control" name="NewTaskBlueprintInstructions" id="instructions" rows="5">@Model.NewTaskBlueprint.Instructions</textarea>
+                </div>
+                <div class="input-wrapper mt-2">
+                    <label for="instructions-preview">Vorschau:</label>
+                    <div id="instructions-preview" class="markdown-preview"></div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <div class="d-flex justify-content-center align-items-center">
+                <button class="btn" type="button" id="submitButton" onclick="submitTaskBlueprint()">Submit</button>
+                <button class="btn" type="button" id="updateButton" onclick="updateTaskBlueprint()" style="display:none;">Update</button>
+            </div>
+
+            <form id="TaskBlueprintFormCreate" method="post" asp-page-handler="CreateTaskBlueprint">
+                <input type="hidden" name="ToEditProcessBlueprintName"/>
+                <input type="hidden" name="NewProcessBlueprintRoleIds"/>
+                <input type="hidden" name="NewTaskBlueprint.TaskName"/>
+                <input type="hidden" name="NewTaskBlueprint.DueDateType"/>
+                <input type="hidden" name="NewTaskBlueprint.DaysRelativeToDueDate"/>
+                <input type="hidden" name="NewTaskBlueprint.PermittedDepartmentIds"/>
+                <input type="hidden" name="NewTaskBlueprint.PermittedContractTypeIds"/>
+                <input type="hidden" name="NewTaskBlueprint.PermittedRoleId"/>
+                <input type="hidden" name="NewTaskBlueprint.Instructions"/>
+            </form>
+            <form id="TaskBlueprintFormUpdate" class="task-from" method="post" asp-page-handler="UpdateTaskBlueprint">
+                <input type="hidden" name="ToUpdateTaskBlueprintName"/>
+                <input type="hidden" name="ToEditProcessBlueprintName"/>
+                <input type="hidden" name="NewProcessBlueprintRoleIds"/>
+                <input type="hidden" name="NewTaskBlueprint.TaskName"/>
+                <input type="hidden" name="NewTaskBlueprint.DueDateType"/>
+                <input type="hidden" name="NewTaskBlueprint.DaysRelativeToDueDate"/>
+                <input type="hidden" name="NewTaskBlueprint.PermittedDepartmentIds"/>
+                <input type="hidden" name="NewTaskBlueprint.PermittedContractTypeIds"/>
+                <input type="hidden" name="NewTaskBlueprint.PermittedRoleId"/>
+                <input type="hidden" name="NewTaskBlueprint.Instructions"/>
+            </form>
+            <form id="TaskBlueprintFormDelete" class="task-form" method="post" asp-page-handler="DeleteTaskBlueprint">
+                <input type="hidden" name="ToEditProcessBlueprintName"/>
+                <input type="hidden" name="ToUpdateTaskBlueprintName"/>
+            </form>
+        </div>
+    </div>
+    <div class="preview-container" id="CreatedTaskBlueprints">
+        <h3>Aufgaben Übersicht</h3>
+        @foreach (var item in Model.AllTasks)
+        {
+            <div class="item" data-task-name="@item.TaskName">
+                <button class="btn task-button item-button @(item.TaskName == Model.ToUpdateTaskBlueprintName ? "editing-task-button" : "")"
+                        type="button"
+                        data-task-name="@item.TaskName"
+                        data-due-date-type="@item.DueDateType"
+                        data-days-rel="@item.DaysRelativeToDueDate"
+                        data-instructions="@item.Instructions"
+                        data-permittedRole-id="@item.PermittedRoleId"
+                        data-permittedContractType-ids="@string.Join(",", item.PermittedContractTypes.Select(p => p.Id))"
+                        data-permittedDepartment-ids="@string.Join(",", item.PermittedDepartments.Select(d => d.Id))"
+                        onclick="selectTaskBlueprint(this)">
+                    @item.TaskName
+                </button>
+                <button class="btn trash-button @(item.TaskName == Model.ToUpdateTaskBlueprintName ? "editing-task-button" : "")"
+                        type="button"
+                        onclick="deleteTaskBlueprint('@item.TaskName')">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </div>
+        }
+    </div>
+
+</div>
+<div class="form-group">
+    <div class="input-wrapper">
+        <label for="ms-03">Zugelassene Rollen für Prozess Auswählen: </label>
+        <div class="multiselect-dropdown" id="ms-03">
+            <button class="btn dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Zugriffsrecht auf Template
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="filterDropdown">
+                @foreach (var role in Model.AvailableRoles)
+                {
+                    if (role.RoleName != "Bezugsperson" && role.RoleName != "Vorgangsverantwortlicher")
+                    {
+                        <li>
+                            <div class="multiselect-item">
+                                <input type="checkbox"
+                                       value="@role.Id"
+                                       id="ms-03_@role.Id"
+                                       name="ms-03"
+                                       @(Model.NewProcessBlueprintRoleIds.Contains(role.Id.ToString()) || role.RoleName == "Administrator" ? "checked" : "")
+                                       @(role.RoleName == "Administrator" ? "disabled" : "")
+                                       onchange="updateDropdownText('ms-03', 'Zugriffsrecht auf Template')"/>
+                                <label for="ms-03_@role.Id">@role.RoleName</label>
+                            </div>
+                        </li>
+                    }
+                }
+            </ul>
+            <span class="text-danger">@Html.ValidationMessage("NewProcessBlueprintRoleIds")</span>
+        </div>
+    </div>
+</div>
+<div class="d-flex justify-content-center align-items-center">
+    <form method="get" asp-page="Index">
+        <button type="submit" class="btn me-5">Zurück</button>
+    </form>
+    <button class="btn form-button" type="button" onclick="submitProcessBlueprint()">Update</button>
+</div>
+<form id="ProcessBlueprintForm" class="task-form" method="post" asp-page-handler="CreateProcessBlueprint">
+    <input type="hidden" id="NewProcessBlueprintNameHidden" name="ToEditProcessBlueprintName"/>
+    <input type="hidden" id="NewProcessBlueprintPermittedRoles" name="NewProcessBlueprintRoleIds"/>
+</form>
+
+</div>
+
+@section Scripts
+{
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+    function updateDropdownText(dropdownId, displayText) {
+        const dropdown = document.getElementById(dropdownId);
+        const checkboxes = dropdown.querySelectorAll('.dropdown-menu .multiselect-item input[type="checkbox"]');
+        console.log(checkboxes.length);
+        const selectedRoles = [];
+
+        checkboxes.forEach((checkbox) => {
+            if (checkbox.checked) {
+                const label = dropdown.querySelector(`label[for="${checkbox.id}"]`);
+                if (label) {
+                    selectedRoles.push(label.textContent.trim());
+                }
+            }
+        });
+
+
+        const button = dropdown.querySelector('.dropdown-toggle');
+        if (selectedRoles.length > 0 && selectedRoles.length < 4) {
+            button.textContent = selectedRoles.join(', ');
+        } else if (selectedRoles.length >= 4){
+            button.textContent = selectedRoles.length + ' ausgewählt';
+        } else {
+            button.textContent = displayText;
+        }
+    }
+    function updateResponsibilityDropdownText() {
+        const selectedRole = document.querySelector('input[name="respRole"]:checked');
+        const dropdownButton = document.getElementById('responsibilityDropdown');
+
+        if (selectedRole) {
+            dropdownButton.textContent = selectedRole.value;
+        } else {
+            dropdownButton.textContent = 'Zuständigkeit festlegen';
+        }
+    }
+    function clearValidationMessages() {
+        const validationMessages = document.querySelectorAll('.text-danger');
+        validationMessages.forEach(message => {
+            message.textContent = '';
+        });
+    }
+
+</script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function ()
+    {
+        // init dropdown text
+        const dropdownIds = ['ms-01', 'ms-02', 'ms-03'];
+        dropdownIds.forEach(dropdownId => {
+            updateDropdownText(dropdownId, getDefaultText(dropdownId));
+        });
+
+        updateResponsibilityDropdownText();
+        // Update the dropdown text to reflect the selection
+        dropdownIds.forEach(dropdownId => {
+            updateDropdownText(dropdownId, getDefaultText(dropdownId));
+        });
+
+
+        // all mulitselect dropdown should stay open when item is clicked
+        const dropdownMenu = document.querySelectorAll('.dropdown-menu');
+
+        // Dropdown stays open, when checkbox label is clicked
+        dropdownMenu.forEach(dropdownMenu =>
+        {
+            dropdownMenu.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+
+        // render markdown
+        const instructionsTextarea = document.getElementById('instructions');
+        const instructionsPreview = document.getElementById('instructions-preview');
+
+        function updateMarkdownPreview() {
+            const markdownText = instructionsTextarea.value;
+            const htmlContent = marked.parse(markdownText);
+            instructionsPreview.innerHTML = htmlContent;
+        }
+
+
+        instructionsTextarea.addEventListener('input', updateMarkdownPreview);
+        updateMarkdownPreview();
+
+        window.submitTaskBlueprint = function() {
+            const form = document.getElementById('TaskBlueprintFormCreate');
+            if (!form) {
+                console.error('Form not found');
+                return;
+            }
+
+            form.elements['ToEditProcessBlueprintName'].value = document.getElementById('ToEditProcessBlueprintName').value;
+
+
+            form.elements['NewTaskBlueprint.TaskName'].value = document.getElementById('NewTaskBlueprintName').value;
+            form.elements['NewTaskBlueprint.DaysRelativeToDueDate'].value = document.getElementById('NewTaskBlueprintDays').value;
+
+            const selectedRole = document.querySelector('input[name="respRole"]:checked');
+            if (selectedRole) {
+                form.elements['NewTaskBlueprint.PermittedRoleId'].value = selectedRole.id.split('-')[2];
+            }
+
+            var departmentIds = Array.from(document.querySelectorAll('input[name="ms-01"]:checked'))
+                .map(checkbox => checkbox.value);
+            form.elements['NewTaskBlueprint.PermittedDepartmentIds'].value = departmentIds.join(',');
+
+            const contractTypeIds = Array.from(document.querySelectorAll('input[name="ms-02"]:checked'))
+                .map(checkbox => checkbox.value);
+            form.elements['NewTaskBlueprint.PermittedContractTypeIds'].value = contractTypeIds.join(',');
+
+            const permittedRoleIds = Array.from(document.querySelectorAll('input[name="ms-03"]:checked'))
+                .map(checkbox => checkbox.value);
+            form.elements['NewProcessBlueprintRoleIds'].value = permittedRoleIds.join(',');
+            
+            const dueDateTypeSelect = document.getElementById('DueDateTypeSelect');
+            form.elements['NewTaskBlueprint.DueDateType'].value = dueDateTypeSelect.value;
+
+            form.elements['NewTaskBlueprint.Instructions'].value = document.getElementById('instructions').value;
+            form.submit();
+        };
+
+        var selectElement = document.getElementById('DueDateTypeSelect');
+        var dueDateGroup = document.getElementById('dueDateGroup');
+        var createTaskHeader = document.getElementById('createTaskHeader');
+        var updateTaskHeader = document.getElementById('updateTaskHeader');
+
+        function setUpdateMode(isUpdating) {
+            if (isUpdating) {
+                createTaskHeader.style.display = 'none';
+                updateTaskHeader.style.display = 'block';
+                submitButton.style.display = 'none';
+                updateButton.style.display = 'inline-block';
+            } else {
+                createTaskHeader.style.display = 'block';
+                updateTaskHeader.style.display = 'none';
+                submitButton.style.display = 'inline-block';
+                updateButton.style.display = 'none';
+            }
+        }
+
+        // display buttons and header according to ModelState
+        setUpdateMode(@Json.Serialize(Model.IsUpdating));
+        document.querySelector('input[name="ToUpdateTaskBlueprintName"]').value = '@Model.ToUpdateTaskBlueprintName';
+
+        function toggleDueDateInput() {
+            if (selectElement.value === 'CUSTOM') {
+                dueDateGroup.style.display = 'flex';
+            } else {
+                dueDateGroup.style.display = 'none';
+            }
+        }
+
+        selectElement.addEventListener('change', toggleDueDateInput);
+
+        // Initial call to set the correct state on page load
+        toggleDueDateInput();
+
+
+        function setEditingTaskButtons(taskName) {
+
+            document.querySelectorAll('.item button').forEach(button => {
+                button.classList.remove('editing-task-button');
+            });
+
+            // inject class to button
+            if (taskName) {
+                const editingTaskButtons = document.querySelectorAll(`.item[data-task-name="${taskName}"] button`);
+                editingTaskButtons.forEach(button => {
+                    button.classList.add('editing-task-button');
+                });
+            }
+        }
+
+
+        setEditingTaskButtons('@Model.ToUpdateTaskBlueprintName');
+
+        window.selectTaskBlueprint = function(button) {
+
+            const taskName = button.getAttribute('data-task-name');
+            const daysRelativeToDueDate = button.getAttribute('data-days-rel');
+            const instructions = button.getAttribute('data-instructions');
+            const permittedRoleId = button.getAttribute('data-permittedRole-id');
+            const permittedDepartmentIds = button.getAttribute('data-permittedDepartment-ids');
+            const permittedContractTypeIds = button.getAttribute('data-permittedContractType-ids');
+
+            clearValidationMessages();
+            
+            document.getElementById('NewTaskBlueprintName').value = taskName;
+            document.getElementById('NewTaskBlueprintDays').value = daysRelativeToDueDate;
+            document.getElementById('instructions').value = instructions;
+            
+            // Update markdown preview when selecting a task
+            document.getElementById('instructions').value = instructions;
+            updateMarkdownPreview();
+
+            const roleRadio = document.querySelector(`input[name="respRole"][id="ods-01-${permittedRoleId}"]`);
+            if (roleRadio) roleRadio.checked = true;
+
+
+            const departmentIds = permittedDepartmentIds.split(',');
+            document.querySelectorAll('input[name="ms-01"]').forEach(checkbox => {
+                checkbox.checked = departmentIds.includes(checkbox.value);
+            });
+
+
+            const contractTypeIds = permittedContractTypeIds.split(',');
+            document.querySelectorAll('input[name="ms-02"]').forEach(checkbox => {
+                checkbox.checked = contractTypeIds.includes(checkbox.value);
+            });
+
+            // Update duedatetype select
+            const dueDateType = button.getAttribute('data-due-date-type');
+            const dueDateTypeSelect = document.getElementById('DueDateTypeSelect');
+            if (dueDateTypeSelect) {
+                dueDateTypeSelect.value = dueDateType;
+            }
+            // Trigger the change event to update the number input visibility
+            const event = new Event('change');
+            dueDateTypeSelect.dispatchEvent(event);
+
+
+            // fill ToUpdateTaskName in update form 
+            const form = document.getElementById('TaskBlueprintFormUpdate');
+            if (!form) {
+                console.error('Form not found');
+                return;
+            }
+            form.elements['ToUpdateTaskBlueprintName'].value = taskName;
+            console.log(form.elements['ToUpdateTaskBlueprintName'].value);
+            updateDropdownText('ms-01', 'Departments wählen');
+            updateDropdownText('ms-02', 'Vertragsarten wählen');
+            updateResponsibilityDropdownText();
+            setEditingTaskButtons(taskName);
+            setUpdateMode(true);
+        };
+
+        window.updateTaskBlueprint = function() {
+            const form = document.getElementById('TaskBlueprintFormUpdate');
+            if (!form) {
+                console.error('Form not found');
+                return;
+            }
+
+            const taskName = document.getElementById('NewTaskBlueprintName').value;
+            const daysRelativeToDueDate = document.getElementById('NewTaskBlueprintDays').value;
+            const instructions = document.getElementById('instructions').value;
+
+            const selectedRole = document.querySelector('input[name="respRole"]:checked');
+            const roleId = selectedRole ? selectedRole.id.split('-')[2] : '';
+
+            const departmentIds = Array.from(document.querySelectorAll('input[name="ms-01"]:checked'))
+                .map(checkbox => checkbox.value);
+
+
+            const contractTypeIds = Array.from(document.querySelectorAll('input[name="ms-02"]:checked'))
+                .map(checkbox => checkbox.value);
+
+
+            const permittedRoleIds = Array.from(document.querySelectorAll('input[name="ms-03"]:checked'))
+                .map(checkbox => checkbox.value);
+
+            const dueDateTypeSelect = document.getElementById('DueDateTypeSelect');
+            if (!dueDateTypeSelect) {
+                console.error('DueDateTypeSelect element not found');
+                return;
+            }
+
+            const currentTaskName = form.elements['ToUpdateTaskBlueprintName'].value;
+            setEditingTaskButtons(currentTaskName);
+            form.elements['ToEditProcessBlueprintName'].value = document.getElementById('ToEditProcessBlueprintName').value;
+
+            form.elements['NewProcessBlueprintRoleIds'].value = permittedRoleIds.join(',');
+            form.elements['NewTaskBlueprint.TaskName'].value = taskName;
+            form.elements['NewTaskBlueprint.DaysRelativeToDueDate'].value = daysRelativeToDueDate;
+            form.elements['NewTaskBlueprint.PermittedDepartmentIds'].value = departmentIds.join(',');
+            form.elements['NewTaskBlueprint.PermittedContractTypeIds'].value = contractTypeIds.join(',');
+            form.elements['NewTaskBlueprint.PermittedRoleId'].value = roleId;
+            form.elements['NewTaskBlueprint.Instructions'].value = instructions;
+
+            form.elements['NewTaskBlueprint.DueDateType'].value = dueDateTypeSelect.value;
+            form.submit();
+        };
+
+        window.deleteTaskBlueprint = function(taskName) {
+            const form = document.getElementById('TaskBlueprintFormDelete');
+            if (!form) {
+                console.error('Form not found');
+                return;
+            }
+
+            form.elements['ToEditProcessBlueprintName'].value = document.getElementById('ToEditProcessBlueprintName').value;
+            form.elements['ToUpdateTaskBlueprintName'].value = taskName;
+
+
+            form.submit();
+        };
+
+        window.submitProcessBlueprint = function() {
+            const form = document.getElementById('ProcessBlueprintForm');
+            if (!form) {
+                console.error('Form not found');
+                return;
+            }
+
+            form.elements['ToEditProcessBlueprintName'].value = document.getElementById('ToEditProcessBlueprintName').value;
+            const permittedRoleIds = Array.from(document.querySelectorAll('input[name="ms-03"]:checked'))
+                .map(checkbox => checkbox.value);
+            form.elements['NewProcessBlueprintRoleIds'].value = permittedRoleIds.join(',');
+            form.submit();
+        };
+
+        function getDefaultText(dropdownId) {
+            switch (dropdownId) {
+                case 'ms-01':
+                    return 'Departments wählen';
+                case 'ms-02':
+                    return 'Vertragsarten wählen';
+                case 'ms-03':
+                    return 'Zugriffsrecht auf Template';
+                default:
+                    return '';
+            }
+        }
+    });
+</script>
+
+
+}

@@ -1,0 +1,187 @@
+﻿@page
+@using Replay.Model
+@model Replay.Pages.TaskViews.TaskEditModel
+
+@{
+ViewData["Title"] = "Edit";
+}
+<html>
+
+<head>
+    <link rel="stylesheet" href="\css\TaskStylesheet.css">
+</head>
+
+<body style="overflow-x: hidden;">
+<div class="frame-1" style="left: 15px;position: relative;">
+    <form method="post" asp-page-handler="Save">
+        <input type="hidden" name="taskId" data-taskid="@Model.DisplayTask.Id" value="@Model.DisplayTask.Id"/>
+        <div >
+            <header class="header">
+                <h1 class="headertext">Aufgabe bearbeiten</h1>
+            </header>
+            <div class="wrapper">
+                <div class="title">Titel:</div>
+                <div class="input-field">
+                    <div class="label">
+                        <input type="text" name="taskNameInput" value="@Model.DisplayTask.TaskName" class="textinput">
+                    </div>
+                </div>
+                <div class="title">Zuständig:</div>
+                <select class="dropdown" name="responsible">
+                        <optgroup label="Benutzer" name="responsibleUser">
+                            @foreach (User user in @Model.AllUser)
+                            {
+                                @if (@Model.DisplayTask.AssignedUser != null && @Model.DisplayTask.AssignedUser.Name == user.Name)
+                                {
+                                    <option selected class="dropdown-element" name="responsibleUser">@user.Name</option>
+                                }
+                                else
+                                {
+                                    <option class="dropdown-element" name="responsibleUser">@user.Name</option>
+                                }
+                                 
+                            }
+                        </optgroup>
+                        <optgroup label="Rolle" name="responsibleRole">
+                            @foreach (Role role in @Model.AllRoles)
+                            {
+                                @if (@Model.DisplayTask.AssignedUser == null && @Model.DisplayTask.AssignedRole.RoleName == role.RoleName)
+                                {
+                                    <option selected class="dropdown-element" name="responsibleRole">@role.RoleName</option>
+                                }
+                                else
+                                {
+                                    <option class="dropdown-element" name="responsibleRole">@role.RoleName</option>
+                                }
+                            
+                            }
+                        </optgroup>
+                </select>
+                <div class="title">Fällig am:</div>
+                <div class="input-field">
+                    <div class="label">
+                        @*<input name="dueDateInput" type="date" min="2024-01-01" class="selectdate" data-val="true" value="@Model.DisplayTask.DueDate.ToString("yyyy-MM-dd")">*@
+                    </div>
+                </div>
+                <div class="title">Fortschritt:</div>
+                <select class="dropdown" name="taskStatus">
+                    <div hidden id="cutomvalue" value="@DueDateType.CUSTOM"></div>
+                    @foreach (Status status in @Model.AllStatus)
+                    {
+                        @if (string.Equals(Model.DisplayTask.TaskStatus.ToString(), status.ToString()))
+                        {
+                            <option class="dropdown-element" selected value="@status">
+                                @TranslationStatus.getTranslation(status)
+                            </option>
+                        }
+                        else
+                        {
+                            <option class="dropdown-element" value="@status">
+                                @TranslationStatus.getTranslation(status)
+                            </option>
+                        }
+                    }
+                </select>
+
+                <div class="title">Anleitung:</div>
+                <div>
+                    <textarea type="text" name="instructions" class="input-field textinputXL" id="area" >@Model.DisplayTask.Instructions</textarea>
+                    <div class="title"></div>
+                    <div class="input-field textinputXL" id="output"></div>
+                </div>
+            </div>
+            <div class="buttonarea">
+                <!-- Form for deleting the task -->
+                <input type="hidden" name="taskId" value="@Model.DisplayTask.Id"/>
+                <div class="secondary button">
+                    <input type="button" class="buttonlabel label" id="deleteButton" value="Löschen" onclick="return confirm('Wollen Sie wirklich diese Aufgabe löschen?')">
+                </div>
+
+                <div class="primary button">
+                    <input type="submit" class="buttonlabel label" value="Speichern">
+                </div>
+
+
+            </div>
+        </div>
+    </form>
+    <form method="post" asp-page-handler="Delete" id="statusForm">
+        <input type="hidden" name="taskId" id="taskId"/>
+    </form>
+
+</div>
+<script>
+    function deleteTask() {
+        document.getElementById("taskId").value = @Model.DisplayTask.Id
+        $.ajax({
+            type: "POST",
+            url: '/TaskViews/Edit?handler=Delete',
+            data: $('#statusForm').serialize(),
+            success: function(result) {
+                window.location.href = "/TaskViews/TaskList";
+            },
+            error: function(error) {
+                console.log('Error updating task status:', error);
+            }
+
+        });
+    }
+    
+    
+    const originalConfirm = window.confirm;
+    window.confirm = (...args) => {
+        const confirmResult = originalConfirm(...args); // true | false
+        if (confirmResult) {
+            deleteTask()
+        } else {
+            // not confirmed
+        }
+        return confirmResult;
+    }
+</script>
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+<script>
+    // initialize markdown-it library
+    var md = window.markdownit();
+    var editor = document.getElementById('area');
+    var output = document.getElementById('output');
+    var custom = document.getElementById('custom');
+    var div = document.getElementById('costumdiv');
+    var dueDate = document.getElementById('duedate');
+    
+    editor.addEventListener('input', function() {
+        // parse the Markdown into HTML
+        var html = md.render(editor.value);
+        // output the HTML
+        output.innerHTML = html;
+    });
+    dueDate.addEventListener('change',function () {
+        console.log(dueDate.options[dueDate.selectedIndex].value);
+        console.log(div.getAttribute('data-value'));
+        if (dueDate.options[dueDate.selectedIndex].value === div.getAttribute('data-value')) {
+            custom.style.display = "block";
+            div.style.display = "block";
+        } else {
+            custom.style.display = "none";
+            div.style.display = "none";
+        }
+    
+    });
+    
+    
+    window.onload = function load() {
+        if (dueDate.options[dueDate.selectedIndex].value === div.getAttribute('data-value')) {
+            div.style.display = "block";
+            custom.style.display = "block";
+        }
+        var html = md.render(editor.value);
+        output.innerHTML = html;
+    }
+</script>
+
+
+
+</body>
+</html>
+
+

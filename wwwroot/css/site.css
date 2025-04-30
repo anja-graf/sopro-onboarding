@@ -1,0 +1,199 @@
+:root {
+  --peach: #ffb199;
+  --pink: #f83766;
+  --white: #fff;
+  --gray1: #dbdbdb;
+  --gray2: #afafaf;
+  --gray3: #626262;
+  --licorice: #141210;
+  --green: #39b400;
+  --orange: #f90;
+  --red: #d10033;
+  --color-blur: hsla(0,0%,86%,.75);
+  --color-blur-hover: hsla(0,0%,86%,.3);
+  --color-blur-dark: rgba(20,18,16,.8);
+  --color-layer-shadow: rgba(20,18,16,.25);
+  --logo-invert: 0;
+  --color-interaction: #141210;
+  --color-interaction-secondary: #fff;
+  --color-interaction-hover: #ff0844;
+  --color-interaction-hover-text: #fff;
+  --color-interaction-disabled: #dbdbdb;
+  --color-input: var(--color-text);
+  --color-input-placeholder: var(--color-text-subtle);
+  --color-input-disabled: var(--color-interaction-disabled);
+  --color-input-error: #d10033;
+  --color-input-focus: #ff0844;
+  --color-input-hover-bg: transparent;
+  --color-text: #141210;
+  --color-text-subtle: #afafaf;
+  --color-smalltext-highlight: #ff0844;
+  --color-text-link: var(--color-text);
+  --color-text-link-hover: #ff0844;
+  --color-text-menuitem: #141210;
+  --color-text-menuitem-hover: #ff0844;
+  --color-text-menuitem-disabled: #dbdbdb;
+  --color-text-tag: #141210;
+  --color-text-tag-hover: #fff;
+  --color-bg: #fff;
+  --color-bg-accent: #ff0844;
+  --color-bg-warning: #f90;
+  --color-bg-danger: #d10033;
+  --color-bg-success: #39b400;
+  --color-bg-offcanvas: #dbdbdb;
+  --color-bg-tag: var(--color-blur);
+  --color-bg-tag-hover: rgba(255,8,68,.6);
+  --color-bg-tag-disabled: var(--color-blur);
+  --color-bg-tag-current: #ff0844;
+  --color-bg-job-hover: hsla(0,0%,86%,.3);
+  --color-bg-table: hsla(0,0%,86%,.3);
+
+  --sidenav-width: 250px;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Fixed sidenav, full height */
+.sidenav {
+  font-family: 'Roboto', sans-serif;
+  font-weight: 300;
+  height: 100%;
+  width: var(--sidenav-width);
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  margin-top: 2rem;
+  border-right: 2px solid var(--gray1);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.sidenav img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 2rem;
+  width: 85%;
+  height: auto;
+}
+
+/* Style the sidenav links and the dropdown button */
+.sidenav a, .dropdown-btn {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  color: var(--licorice);
+  font-weight: 450;
+  font-size: 22px;
+  display: block;
+  border: none;
+  background: none;
+  width:100%;
+  text-align: left;
+  cursor: pointer;
+  outline: none;
+}
+
+/* On mouse-over */
+.sidenav a:hover, .dropdown-btn:hover {
+  color: var(--color-text-link-hover);
+}
+
+
+.main {
+  margin-left: var(--sidenav-width);
+  font-size: 20px;
+  padding: 0px 10px;
+  margin-top: 2rem;
+}
+
+.dropdown-container {
+  display: none;
+  padding-left: 10px;
+}
+
+.dropdown-container a {
+  padding-bottom: 0px;
+  padding-top: 0px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+
+
+.fa-caret-down {
+  float: right;
+  padding-right: 8px;
+}
+
+.user-overview {
+  margin-top: auto;
+  margin-bottom: 32px;
+  border-top: 2px solid var(--gray1);
+  padding: 10px 0 0;
+
+  font-family: 'Roboto', sans-serif;
+  font-size: 22px;
+  font-weight: 450;
+  color: var(--licorice);
+}
+
+.user-overview-name {
+  margin-top: 15px;
+  padding-left: 0;
+}
+
+.user-overview-mail {
+  padding-left: 15px;
+  margin-bottom: 5px;
+}
+
+
+
+.pb-container {
+  display: inline-block;
+  height: 60px;
+  border-radius: 50%;
+  
+}
+
+.user-overview img {
+  display:block;
+  max-width: 100%;
+  height: auto;
+  border-radius:50%;
+  border: 2px solid var(--color-text-link-hover);
+}
+ 
+.btn {
+  color: var(--white);
+  background-color: var(--red);
+}
+
+.btn:hover {
+  color: var(--licorice);
+}
+.btn:focus {
+  outline: 0;
+  box-shadow: 0 0 0 .25rem rgba(219, 18, 151, 0.25) !important;
+}
+
+
+.sidenav .btn {
+  color: var(--white);
+  background-color: var(--red);
+}
+
+.sidenav .btn:hover {
+  color: var(--licorice);
+}
+.sidenav .btn:focus {
+  outline: 0;
+  box-shadow: 0 0 0 .25rem rgba(219, 18, 151, 0.25) !important;
+}
+
+

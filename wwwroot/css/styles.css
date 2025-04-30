@@ -1,0 +1,185 @@
+﻿:root {
+    --white: #ffffff;
+    --grey1: #dbdbdb;
+    --grey2: #afafaf;
+    --grey3: #626262;
+    --licorice: #141210;
+    --amaranth: #e61d47;
+    --font-family-league-spartan: 'League Spartan', sans-serif;
+    --font-family-sans: 'Open Sans';
+}
+
+.uppercase-spartan {
+    font-family: var(--font-family-league-spartan);
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.open-sans {
+    font-family: var(--font-family-sans);
+    font-size: 10px;
+}
+
+.open-sans-bold {
+    font-family: var(--font-family-sans);
+    font-weight: bold;
+    font-size: 10px;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--white);
+}
+
+.container {
+    display: flex;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header h1 {
+    font-family: var(--font-family-league-spartan);
+    font-weight: bold;
+    margin: 0;
+    color: var(--amaranth);
+}
+
+.adduser {
+    background-color: var(--amaranth);
+    border-radius: 8px;
+    height: 60px;
+    width: 211px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--licorice);
+    font-size: 20px;
+    font-weight: 500;
+    font-style: normal;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.adduser img {
+    margin-left: 10px;
+    margin-right: 20px;
+    width: 30px;
+    height: 30px;
+}
+
+.search-filter {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+#searchFilterForm {
+    display: flex;
+    width: 100%;
+}
+
+.search-input {
+    padding: 10px 40px 10px 40px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-image: url('/img/search.png');
+    background-repeat: no-repeat;
+    background-position: 10px center;
+    background-size: 20px 20px;
+    margin-right: 10px;
+}
+
+.filter-dropdown-container {
+    position: relative;
+    display: inline-block;
+}
+
+.filter-btn {
+    background-color: var(--amaranth);
+    color: var(--licorice);
+    border: none;
+    border-radius: 4px;
+    padding: 10px 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.filter-btn img {
+    width: 16px;
+    height: 16px;
+    margin-right: 5px;
+}
+
+.filter-dropdown {
+    display: none;
+    position: absolute;
+    background-color: var(--white);
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+    border-radius: 4px;
+    overflow: hidden;
+    right: 0;
+    top: 100%;
+}
+
+.filter-dropdown .dropdown-item {
+    color: var(--licorice);
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    cursor: pointer;
+}
+
+.filter-dropdown .dropdown-item:hover {
+    background-color: var(--grey1);
+}
+
+.user-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.user-table th, .user-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+}
+
+.user-table th {
+    color: var(--amaranth);
+}
+
+.user-table .edit-btn, .user-table .delete-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.user-table .edit-btn img, .user-table .delete-btn img {
+    width: 16px;
+    height: 16px;
+}
+
+.user-table td a {
+    text-decoration: none;
+    color: inherit;
+}

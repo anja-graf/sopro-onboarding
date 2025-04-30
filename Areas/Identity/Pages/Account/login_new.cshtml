@@ -1,0 +1,148 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Log in";
+}
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Makandra Anmeldung</title>
+    <style>
+        :root {
+            --white: #ffffff;
+            --grey1: #dbdbdb;
+            --grey2: #afafaf;
+            --grey3: #626262;
+            --licorice: #141210;
+            --amaranth: #e61d47;
+            --font-family-league-spartan: 'League Spartan', sans-serif;
+            --font-family-sans: 'Open Sans';
+        }
+
+        body {
+            font-family: var(--font-family-sans);
+            background-color: var(--white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            padding: 20px;
+            border: 1px solid var(--grey1);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
+        }
+
+        .logo {
+            width: 200px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--amaranth);
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: var(--grey3);
+        }
+
+        form {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        button[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--grey1);
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button[type="submit"] {
+            background-color: var(--amaranth);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: var(--amaranth);
+        }
+
+        .divider {
+            margin: 20px 0;
+            color: var(--grey2);
+        }
+
+        .google-button {
+            width: 100%;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--grey1);
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: var(--white);
+        }
+
+        .google-button img {
+            width: 20px;
+            margin-right: 10px;
+        }
+
+        .google-button:hover {
+            background-color: var(--grey1);
+        }
+
+        .terms {
+            margin-top: 20px;
+            font-size: 12px;
+            color: var(--grey2);
+        }
+
+        .terms a {
+            color: var(--grey2);
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+    </style>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap">
+</head>
+<body>
+    <div class="container">
+        <img src="~/img/makandra.png" alt="Makandra Logo" class="logo">
+        <h1>Anmeldung</h1>
+        <p>Gib deine Zugangsdaten ein</p>
+        <form action="~/ProcessInstanceViews/Index">
+            <input type="text" placeholder="Email oder Nutzername" required>
+            <input type="password" placeholder="Passwort" required>
+            <button type="submit">Anmelden</button>
+        </form>
+        <div class="divider">or continue with</div>
+        <button class="google-button">
+            <img src="~/img/google.svg" alt="Google Logo"> Google
+        </button>
+        <p class="terms">
+            By clicking continue, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+        </p>
+    </div>
+</body>
+</html>

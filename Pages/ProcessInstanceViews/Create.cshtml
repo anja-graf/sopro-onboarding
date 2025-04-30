@@ -1,0 +1,84 @@
+@page
+@using Replay.Model
+@model Replay.Pages.ProcessInstanceViews.CreateModel
+
+@{
+ViewData["Title"] = "Create";
+}
+
+<html>
+
+<head>
+    <link rel="stylesheet" href="\css\TaskViewStylesheet.css">
+</head>
+
+<body style="overflow-x: hidden;">
+<div class="frame-1 screen " data-id="23:923">
+    <form method="post">
+        <header class="header-Dm6SmC" data-id="23:963">
+            <h1 class="aufgabe-hinzufgen-eXk07n valign-text-middle aufgabe-hinzufgen" data-id="23:964">Vorgang hinzufügen</h1>
+        </header>
+        <div class="title-VxPVnb title" data-id="38:101">
+            <div class="titel valign-text-middle inter-semi-bold-licorice-34px" data-id="38:102">Titel:</div>
+        </div>
+        <div class="x01-input-field-fThdWi x01-input-field" data-id="23:929">
+            <div class="label-5ArFWQ label inter-medium-abbey-24px" data-id="38:127">
+                <input type="text" name="ProcessInstanceName" placeholder="Bitte Vorgangstitel eingeben" class="textinput">
+            </div>
+        </div>
+
+        <div class="title-5ArFWQ title" data-id="38:106" style="top: 180px;">
+            <div class="zustndig-QBC3YW valign-text-middle inter-semi-bold-licorice-34px" data-id="38:107">
+                Vorgangs-<br>verantwortlicher:</div>
+        </div>
+
+        <div class="x01-input-field-VxPVnb x01-input-field" data-id="38:109">
+            <div class="label-WxtALn label inter-medium-abbey-24px" data-id="38:110">
+                <input type="text" name="UserName" placeholder="Bitte Name des Vorgangsverantwortlichen eingeben" class="textinput">
+            </div>
+        </div>
+
+
+        <div class="fllig-am-VxPVnb valign-text-middle inter-semi-bold-licorice-34px" data-id="38:116">Zieldatum:
+        </div>
+        <div class="x01-input-field-5ArFWQ x01-input-field" data-id="38:114">
+            <div class="label-AdzjHf label inter-medium-abbey-24px" data-id="38:115">
+                <input asp-for="@Model.DisplayProcessInstance.DueDate" name="DueDateInput" type="date" min="2024-01-01" class="selectdate" data-val="true" >
+            </div>
+        </div>
+
+        <div class="fortschritt-VxPVnb valign-text-middle inter-semi-bold-licorice-34px" data-id="38:120">
+            Vertragsart:</div>
+        <div class="x04-dropdown-VxPVnb x04-dropdown" data-id="38:121">
+            <div class="label-qynaix label inter-medium-abbey-24px" for="Status" data-id="38:122">
+                <select class="dropdown" name="ContractType">
+                    <option class="dropdown-element" selected disabled value="Bitte Vertragsart auswählen">Bitte Vertragsart auswählen</option>
+                    <option class="dropdown-element" value="Praktikum">Praktikum</option>
+                    <option class="dropdown-element" value="Trainee">Trainee</option>
+                    <option class="dropdown-element" value="Festanstellung">Festanstellung</option>
+                    <option class="dropdown-element" value="Werkstudent"> Werkstudent </option>
+                </select>
+            </div>
+        </div>
+
+        <div style="top: 420px;" class="anleitung-VxPVnb valign-text-middle inter-semi-bold-licorice-34px" data-id="38:139">
+            Bezugsperson:
+        </div>
+
+        <div style="top: 420px;" class="x01-input-field-VxPVnb x01-input-field" data-id="38:109">
+            <div class="label-WxtALn label inter-medium-abbey-24px" data-id="38:110">
+                <input type="text" name="UserName" placeholder="Bitte Name der Bezugsperson eingeben" class="textinput">
+            </div>
+        </div>
+
+        <div class="x00-primary-button-2left x00-primary-button" data-id="23:944" style="top:530px">
+            <input type="submit" class="label-Wkevx0 label" name="action" value="Vorgang Starten">
+        </div>
+        <div class="x00-primary-button-fThdWi x00-primary-button" data-id="23:944" style="top:530px">
+            <input type="submit" class="label-Wkevx0 label" name="action" value="Speichern">
+        </div>
+    </form>
+</div>
+</body>
+
+</html>

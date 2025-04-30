@@ -1,0 +1,72 @@
+@page
+@model Replay.Pages.ProcessBlueprintViews.IndexModel
+
+@{
+    ViewData["Title"] = "ProcessBlueprintIndex";
+}
+
+<head>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="~/css/processInstanceStylesheet.css" rel="stylesheet"/>
+</head>
+
+<h1>Übersicht aller Prozesse</h1>
+
+<div class="process-list">
+
+    <div class="card process-card">
+        <div class="card-body">
+            <h3 class="card-title">Neuen Prozess erstellen</h3>
+            <div class="d-flex justify-content-center align-items-center" style="height: 100%;">
+                <form method="get" asp-page="Create">
+                    <button type="submit" class="btn">
+                        <i class="bi bi-plus" style="font-size: 2rem;"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    @foreach (var pBlueprint in Model.AllBlueprints)
+    {
+        <div class="card process-card">
+            <div class="card-body">
+                <h3 class="card-title">@pBlueprint.ProcessBlueprintName</h3>
+                <div class="user-info">
+                    <p class="user-label">Zugelassene Rollen</p>
+                    <span class="user-pill">@string.Join(", ", pBlueprint.PermittedRoles.Select((r => r.RoleName)))</span>
+                </div>
+                <div class="task-list">
+                    @foreach (var task in pBlueprint.Tasks)
+                    {
+                        <div class="task-item">
+                            <div class="task-content">
+                                <span class="task-name">@task.TaskName</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="btn-group">
+                    <form method="get" asp-page="/ProcessInstanceViews/Start">
+                        <input type="hidden" name="toCreate" value="@pBlueprint.ProcessBlueprintName" />
+                        <button type="submit" class="btn btn-sm">Starten</button>
+                    </form>
+                    <form method="get" asp-page="/ProcessBlueprintViews/Edit">
+                        <input type="hidden" name="toEdit" value="@pBlueprint.ProcessBlueprintName" />
+                        <button type="submit" class="btn btn-sm">Bearbeiten</button>
+                    </form>
+                    <form method="get" asp-page="/ProcessBlueprintViews/Details">
+                        <input type="hidden" name="toDetail" value="@pBlueprint.ProcessBlueprintName" />
+                        <button type="submit" class="btn btn-sm">Details</button>
+                    </form>
+                    <form method="post" asp-page-handler="Delete" asp-route-toDel="@pBlueprint.ProcessBlueprintName">
+                        <button type="submit" class="btn btn-sm">Löschen</button>
+                    </form>
+                    
+                </div>
+            </div>
+        </div>
+        
+    }
+</div>

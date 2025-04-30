@@ -1,0 +1,60 @@
+@using Microsoft.AspNetCore.Identity
+@using Replay.Pages.TaskViews
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<div class="sidenav">
+    <img src=@Url.Content("~/img/sidenav-logo.svg") alt="Logo" />
+    <button class="dropdown-btn">
+        <i class="bi bi-house-fill"></i>
+        Aufgaben
+        <i class="bi bi-caret-down-fill float-end"></i>
+    </button>
+    <div class="dropdown-container">
+        <a href="~/TaskViews/TaskList">Meine Aufgaben</a>
+        <a href="~/TaskViews/Create">Aufgabe Erstellen</a>
+    </div>
+    <button class="dropdown-btn">
+        <i class="bi bi-file-text-fill"></i>
+        Vorgänge
+        <i class="bi bi-caret-down-fill float-end"></i>
+    </button>
+    <div class="dropdown-container">
+        <a href="~/ProcessInstanceViews/Index">Meine Vorgänge</a>
+        <a href="~/ProcessInstanceViews/Archived">Archivierte Vorgänge</a>
+        <a href="#">Vorgang starten</a>
+    </div>
+    <button class="dropdown-btn">
+        <i class="bi bi-person-fill"></i>
+        Admin
+        <i class="bi bi-caret-down-fill float-end"></i>
+    </button>
+    <div class="dropdown-container">
+        <a href="~/ContractTypeViews/Index">Create ContractType</a>
+        <a href="~/UserViews/Index_new">Create User</a>
+        <a href="~/ProcessBlueprintViews/Index">Prozess erstellen</a>
+        <a href="~/ProcessInstanceViews/Create">Vorgang erstellen</a>
+        <a href="~/RoleViews/Index">Rolle erstellen</a>
+        <a href="~/DepartmentViews/Index">Abteilung erstellen</a>
+    </div>
+    <div class="user-overview">
+        @*ToDo: Use user validation and only display User bar if logged in*@
+        @if (true)
+        {
+            <div class="row">
+                <div class="col">
+                    <div class="pb-container">
+                        <img src="@Url.Content("~/img/pb.jpg")" alt="profile picture"/>
+                    </div>
+                </div>
+                <div class="col-8 user-overview-name">
+                    <p>@MockData.demo.Name</p>
+                </div>
+            </div>
+            <p class="user-overview-mail">@MockData.demo.Email</p>
+            <div class="m-2 ">
+                <button class="btn w-100" onclick="window.location.href = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';">Logout</button>
+            </div>
+        }
+    </div>
+</div>

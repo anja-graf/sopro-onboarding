@@ -1,0 +1,128 @@
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.input-wrapper {
+    display: flex;
+    align-items: center;
+}
+
+.input-wrapper label {
+    flex: 0 0 40%;
+    margin-right: 10px;
+    margin-left: 10px;
+    text-align: left;
+}
+.form-group span {
+    margin-left: 5px;
+    text-align: left;
+}
+.form-group input,
+.form-group select,
+.form-group textarea,
+.form-group .optgroup-dropdown-select,
+.form-group .multiselect-dropdown {
+    flex: 1;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+#instructions, .markdown-preview {
+    height: 150px; 
+    overflow-y: auto;
+}
+
+.markdown-preview {
+    width: 100%;
+    padding: 6px;
+    border: 1px solid var(--gray1);
+    background-color: var(--white);
+    border-radius: 3px;
+}
+
+/*
+    Dont delete this class even tough it seems unused
+    Its injected to the selected Task by js at runtime
+*/
+.editing-task-button {
+    background-color: var(--green) !important;
+}
+.editing-task-button:focus {
+    outline: 0;
+    box-shadow: 0 0 0 .25rem rgba(165, 255, 102, 0.75) !important;
+}
+.create-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 60%;
+    min-height: 200px;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+
+.create-container button
+{
+    align-self: center;
+}
+
+.preview-container {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 30%;
+    height: 650px;
+    overflow-y: auto;
+    padding: 15px;
+    background-color: #f9f9f9;
+}
+.item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    margin: 5px 0;
+    border: 1px solid var(--gray1);
+    border-radius: 3px;
+}
+.task-button {
+    flex-grow: 1;
+    text-align: left;
+    white-space: normal;
+    word-wrap: break-word;
+    max-width: calc(100% - 50px);
+    margin-right: 10px;
+    overflow: hidden;
+}
+
+.trash-button {
+    flex-shrink: 0;
+    width: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--gray1);
+    border-radius: 3px;
+}
+
+.multiselect-item input[type="checkbox"], .optgroup-item input[type="radio"] {
+    margin-left: 5px;
+}
+select, textarea, input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 2px;
+    border: 1px solid var(--gray1);
+    border-radius: 3px;
+}
+
+.form-button {
+    display: inline-block;
+    width: auto;
+}

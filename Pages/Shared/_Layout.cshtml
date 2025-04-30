@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - Replay</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link
+        rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    </head>
+<body>
+<partial name="_SidenavPartial"/>
+
+<div class="main">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+<script>
+    var dropdown = document.getElementsByClassName("dropdown-btn");
+    var i;
+
+    for (i = 0; i < dropdown.length; i++) {
+        dropdown[i].addEventListener("click", function () {
+            var dropdownContent = this.nextElementSibling;
+
+            if (dropdownContent.style.display === "block") {
+                dropdownContent.style.display = "none";
+                var icon = this.querySelector("i.bi.bi-caret-up-fill");
+                icon.classList.remove("bi-caret-up-fill");
+                icon.classList.add("bi-caret-down-fill");
+            } else {
+                dropdownContent.style.display = "block";
+                var icon = this.querySelector("i.bi.bi-caret-down-fill");
+                icon.classList.remove("bi-caret-down-fill");
+                icon.classList.add("bi-caret-up-fill");
+            }
+        });
+    }
+</script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

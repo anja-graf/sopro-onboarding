@@ -1,0 +1,232 @@
+@page
+@model Replay.Pages.ProcessInstanceViews.Start
+
+@{
+    Layout = "Shared/_Layout";
+}
+<!DOCTYPE html>
+
+<html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewData["Title"]</title>
+    <link href="~/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="~/css/processInstanceStylesheet.css" rel="stylesheet"/>
+</head>
+<body>
+<div>
+    <h1>@Model.ToInsanceBlueprint.ProcessBlueprintName</h1>
+    <form method="post" asp-page-handler="CreateInstance" id="process-form">
+        <input type="hidden" name="ProcessBlueprintName" value="@Model.ToInsanceBlueprint.ProcessBlueprintName"/>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="respUser">Vorgangsverantwortlicher</label>
+                    <input asp-for="RespUserMail" type="text" class="form-control" id="respUser" name="RespUserMail" placeholder="E-Mail" list="user-list">
+                    <span asp-validation-for="RespUserMail" class="text-danger"></span>
+                    <datalist id="user-list">
+                        @foreach (var user in Model.AllUsers)
+                        {
+                            <option value="@user.Email">@user.Name</option>
+                        }
+                    </datalist>
+                    
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="refUser">Bezugsperson</label>
+                    <input asp-for="RefUserMail" type="text" class="form-control" id="refUser" name="RefUserMail" placeholder="E-Mail" list="user-list">
+                    <span asp-validation-for="RefUserMail" class="text-danger"></span>
+                    <datalist id="user-list">
+                        @foreach (var user in Model.AllUsers)
+                        {
+                            <option value="@user.Email">@user.Name</option>
+                        }
+                    </datalist>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="department-select">Abteilung</label>
+                    <select name="departmentSelect" id="department-select">
+                        <option value="-1">Bitte Abteilung wählen</option>
+                        @foreach (var dep in Model.AllDepartments)
+                        {
+                            <option value="@dep.Id">@dep.DepartmentName</option>
+                        }
+                    </select>
+                    <div>
+                        <span asp-validation-for="DepartmentId" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" name="DepartmentId" id="department-id"/>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="contract-select">Vertragsart</label>
+                    <select name="contractSelect" id="contract-select">
+                        <option value="-1">Bitte Vertragsart wählen</option>
+                        @foreach (var contract in Model.AllContractTypes)
+                        {
+                            <option value="@contract.Id">@contract.ContractName</option>
+                        }
+                    </select>
+                    <div>
+                        <span asp-validation-for="ContractId" class="text-danger"></span>
+                    </div>
+                    <input type="hidden" name="ContractId" id="contract-id"/>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <label for="date" class="col-sm-2 col-form-label">Zieldatum</label>
+            <div class="col-sm-10">
+                <input asp-for="PInstanceDueDate" type="date" class="form-control" id="date" name="PInstanceDueDate">
+                <span asp-validation-for="PInstanceDueDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="task-preview">
+            @*for instead of foreach to use list index as html id (Taskname wont worke becuase of spaces and special chars)*@
+            @for (int i = 0; i < Model.ToInsanceBlueprint.Tasks.Count; i++)
+            {
+                var tBlueprint = Model.ToInsanceBlueprint.Tasks[i];
+                var safeId = $"task_{i}";
+                <div class="task-preview-item"
+                     data-departments="@string.Join(",", tBlueprint.PermittedDepartments.Select(d => d.Id))"
+                     data-contracts="@string.Join(",", tBlueprint.PermittedContractTypes.Select(c => c.Id))"
+                     data-due-days="@tBlueprint.DaysRelativeToDueDate">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0 ps-1">@tBlueprint.TaskName</h5>
+                        <button class="btn btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#@safeId" aria-expanded="false" aria-controls="@safeId">
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                    </div>
+                    <div class="collapse mt-2" id="@safeId">
+                        <div class="card card-body">
+                            <p>Zugewiesen: @tBlueprint.PermittedRole.RoleName</p>
+                            <p>Fälligkeit: <span class="due-date"></span></p>
+                            <p>@tBlueprint.Instructions</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+        <button type="button" class="start-button" onclick="submitForm()">Starten</button>
+
+    </form>
+</div>
+</body>
+
+@section scripts
+{
+<script>
+    function submitForm() {
+    var depSelectBox = document.getElementById("department-select");
+    var depSelectedValue = depSelectBox.options[depSelectBox.selectedIndex].value;
+    document.getElementById("department-id").value = depSelectedValue;
+
+    var selectBox = document.getElementById("contract-select");
+    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+    document.getElementById("contract-id").value = selectedValue;
+
+    document.getElementById("process-form").submit();
+    }
+
+    function filterTasks() {
+        var departmentId = document.getElementById("department-select").value;
+        var contractId = document.getElementById("contract-select").value;
+
+        var tasks = document.querySelectorAll('.task-preview-item');
+
+        tasks.forEach(function(task) {
+            var taskDepartments = task.getAttribute('data-departments').split(',');
+            var taskContracts = task.getAttribute('data-contracts').split(',');
+
+            var departmentMatch = departmentId === "-1" || taskDepartments.includes(departmentId);
+            var contractMatch = contractId === "-1" || taskContracts.includes(contractId);
+
+            if (departmentMatch && contractMatch) {
+                task.style.display = '';
+            } else {
+                task.style.display = 'none';
+            }
+            updateLastChildStyle();
+        });
+    }
+
+    // change chevron icon, when button is pressed
+    function toggleChevron(event) {
+        var chevronIcon = event.currentTarget.querySelector('.bi');
+        if (chevronIcon.classList.contains('bi-chevron-down')) {
+            chevronIcon.classList.remove('bi-chevron-down');
+            chevronIcon.classList.add('bi-chevron-up');
+        } else {
+            chevronIcon.classList.remove('bi-chevron-up');
+            chevronIcon.classList.add('bi-chevron-down');
+        }
+    }
+    
+    
+    // needed to remove bottom border when dep or contract is selected
+    function updateLastChildStyle() {
+        var tasks = document.querySelectorAll('.task-preview-item');
+        tasks.forEach(function(task) {
+            task.classList.remove('last-visible');
+        });
+
+        var visibleTasks = Array.from(tasks).filter(function(task) {
+            return task.style.display !== 'none';
+        });
+
+        if (visibleTasks.length > 0) {
+            visibleTasks[visibleTasks.length - 1].classList.add('last-visible');
+        }
+    }
+    
+    // update dates in taskpreview: When no date selected: Task.DueDatesRel; 
+    // when date for ProcessInstance selected: Calc real duedate and display
+    function updateDueDates() {
+        var targetDate = document.getElementById("date").value;
+        var tasks = document.querySelectorAll('.task-preview-item');
+
+        tasks.forEach(function(task) {
+            var dueDays = parseInt(task.getAttribute('data-due-days'));
+            var dueElement = task.querySelector('.due-date');
+
+            if (targetDate) {
+                var dueDate = new Date(targetDate);
+                dueDate.setDate(dueDate.getDate() + dueDays);
+                dueElement.textContent = dueDate.toLocaleDateString();
+            } else {
+                if (dueDays > 0) {
+                    dueElement.textContent = dueDays + " Tage nach Zieldatum";
+                } else if (dueDays < 0) {
+                    dueElement.textContent = Math.abs(dueDays) + " Tage vor Zieldatum";
+                } else {
+                    dueElement.textContent = "Am Zieldatum";
+                }
+            }
+        });
+    }
+
+    document.getElementById("department-select").addEventListener("change", filterTasks);
+    document.getElementById("contract-select").addEventListener("change", filterTasks);
+    document.getElementById("date").addEventListener("change", updateDueDates);
+
+    // on page load
+    filterTasks();
+    updateDueDates();
+    // Add event listeners to toggle chevron icons
+    document.querySelectorAll('.task-preview-item button[data-bs-toggle="collapse"]').forEach(function(button) {
+        button.addEventListener('click', toggleChevron);
+    });
+    </script>
+}
+
+</html>
